@@ -89,7 +89,13 @@ export const Create = () => {
                   className="py-1 text-sm text-gray-700 dark:text-gray-200"
                   aria-labelledby="dropdownDefault"
                 >
-                  <li style={{paddingLeft: "10px", paddingTop: "10px", position: "relative"}}>
+                  <li
+                    style={{
+                      paddingLeft: "10px",
+                      paddingTop: "10px",
+                      position: "relative",
+                    }}
+                  >
                     <button
                       id="dropdownDefault"
                       data-dropdown-toggle="dropdown"
@@ -128,11 +134,21 @@ export const Create = () => {
                       </div>
                     )}
                   </li>
-                  <li style={{paddingLeft: "10px"}}>
-                  <button type="button" className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Vote for token dividend</button>
+                  <li style={{ paddingLeft: "10px" }}>
+                    <button
+                      type="button"
+                      className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                    >
+                      Vote for token dividend
+                    </button>
                   </li>
-                  <li style={{paddingLeft: "10px"}}>
-                  <button type="button" className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Remove veto power</button>
+                  <li style={{ paddingLeft: "10px" }}>
+                    <button
+                      type="button"
+                      className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                    >
+                      Remove veto power
+                    </button>
                   </li>
                 </ul>
               </div>
@@ -140,7 +156,7 @@ export const Create = () => {
           </div>
 
           {/*Description*/}
-                    <div className="mb-6">
+          <div className="mb-6">
             <label
               className="block dark:text-white text-sm font-bold mb-2 "
               htmlFor="password"
@@ -198,7 +214,7 @@ export const Create = () => {
         </form>
 
         <p className="text-center text-gray-500 text-xs">
-          &copy;2022 Solulab DAO
+          &copy;2022 Raspberry DAO
         </p>
       </div>
     </div>

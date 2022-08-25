@@ -83,18 +83,17 @@ const Card = (props) => {
       setProposalState(result);
       setproposalStateString(proposalStateOutput());
     });
-
   }, [proposalStateOutput]);
 
   useEffect(() => {
     setTimeLeft(fetchTimeLeft());
-  })
+  });
 
   useEffect(() => {
     getQuorum().then((result) => {
       setQuorumState(result);
     });
-  }) 
+  });
 
   useEffect(() => {
     getVoteStatics(data.pId).then((result) => {
@@ -102,7 +101,7 @@ const Card = (props) => {
       setVotesAgainst(result.voteAgainst);
       setVotesAbstain(result.voteAbstain);
     });
-  })
+  });
 
   useEffect(() => {
     provider.send("eth_requestAccounts", []).then(async () => {
@@ -117,7 +116,7 @@ const Card = (props) => {
     <div
       key={index}
       onClick={() => {
-        toggleModal()
+        toggleModal();
       }}
     >
       {modal && (
@@ -140,7 +139,7 @@ const Card = (props) => {
               </small>
             </p>
             <br />
-            
+
             <p>
               {" "}
               <b>Quorum: </b>
@@ -152,22 +151,22 @@ const Card = (props) => {
                 {quorumState}
               </button>
             </p>
-            
+
             <div className="vote-status-box ">
-            <ul className="px-8 w-48 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-              <li className="py-2 px-4 w-full border-b border-gray-200 dark:border-gray-600 text-center">
-                <b>Voting Stats</b>
-              </li>
-              <li className="py-2 px-4 w-full rounded-t-lg border-b border-gray-200 dark:border-gray-600">
-                For: {votesFor}{" "}
-              </li>
-              <li className="py-2 px-4 w-full border-b border-gray-200 dark:border-gray-600">
-                Against: {votesAgainst}{" "}
-              </li>
-              <li className="py-2 px-4 w-full border-b border-gray-200 dark:border-gray-600">
-                Abstain: {votesAbstain}{" "}
-              </li>
-            </ul>
+              <ul className="px-8 w-48 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                <li className="py-2 px-4 w-full border-b border-gray-200 dark:border-gray-600 text-center">
+                  <b>Voting Stats</b>
+                </li>
+                <li className="py-2 px-4 w-full rounded-t-lg border-b border-gray-200 dark:border-gray-600">
+                  For: {votesFor}{" "}
+                </li>
+                <li className="py-2 px-4 w-full border-b border-gray-200 dark:border-gray-600">
+                  Against: {votesAgainst}{" "}
+                </li>
+                <li className="py-2 px-4 w-full border-b border-gray-200 dark:border-gray-600">
+                  Abstain: {votesAbstain}{" "}
+                </li>
+              </ul>
             </div>
             <hr />
             <p>
@@ -234,7 +233,7 @@ const Card = (props) => {
               className=" h-6 w-6 rounded-full"
               alt=""
             />
-            <p className=" font-medium text-gray-400 ml-2">Solulab DAO</p>
+            <p className=" font-medium text-gray-400 ml-2">Raspberry DAO</p>
           </div>
 
           <button className="bg-green-500 hover:bg-blue-700 text-white font-bold  px-3 rounded-full">

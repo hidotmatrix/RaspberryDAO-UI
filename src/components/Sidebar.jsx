@@ -15,7 +15,7 @@ export const Sidebar = () => {
       />
 
       <h5 className="mb-2 text-2xl mt-4 font-bold text-center text-white flex flex-row justify-center">
-        Solulab DAO
+        Raspberry DAO
         <MdOutlineVerified style={{ fontSize: "30px" }} />
       </h5>
       <p className="font-normal text-gray-400 text-center">20k members</p>
