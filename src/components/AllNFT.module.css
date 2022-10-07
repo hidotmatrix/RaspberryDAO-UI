@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700&display=swap');
+
+.allnftpage {
+    display: flex;
+    justify-content: center;
+}
+
+.collections {
+    width: 1080px;
+    margin-top: 42px;
+    background: rgba(0, 0, 0, 0.76);
+    opacity: 0.97;
+    border-radius: 32px;
+    min-height: 450px;
+    color: white;
+    padding: 40px 52px 50px 52px;
+    margin-bottom: 40px;
+}
+
+.back {
+    font-family: 'Poppins';
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 125%;
+    margin-bottom: 30px;
+    cursor: pointer;
+}
+
+.headingandbuttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 56px;
+}
+
+.heading {
+    font-family: 'Poppins';
+    font-weight: 500;
+    font-size: 30px;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.send {
+    background: #6245ED;
+    border-radius: 16px;
+    margin-right: 20px;
+    font-family: 'Poppins';
+    font-weight: 500;
+    font-size: 16px;
+    padding: 10px 20px;
+}
+
+.deposit {
+    background: #6245ED;
+    border-radius: 16px;
+    font-family: 'Poppins';
+    font-weight: 500;
+    font-size: 16px;
+    padding: 10px 20px;
+}
+
+.nfts{
+    display: grid;
+    grid-template-columns: 250px 250px 250px;
+    column-gap: 110px;
+    row-gap: 50px;
+}
+
+@media only screen and (max-width:1080px){
+    .collections{
+        width: 640px;
+    }
+
+    .nfts{
+        display: grid;
+        grid-template-columns: 250px 250px;
+        column-gap: 40px;
+        row-gap: 40px;
+    }
+}
+
+@media only screen and (max-width:640px){
+    .collections{
+        width: 360px;
+        padding: 40px 24px 50px 24px;
+    }
+
+    .headingandbuttons {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        margin-bottom: 56px;
+    }
+
+    .heading{
+        margin-bottom: 20px;
+    }
+
+    .nfts{
+        display: grid;
+        grid-template-columns: 250px;
+        justify-content: center;
+        column-gap: 40px;
+        row-gap: 40px;
+    }
+}
