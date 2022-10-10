@@ -28,6 +28,7 @@ contract Governance is
         uint256 proposalId;
         uint256 startBlock;
         uint256 endBlock;
+        bytes[] calldatas;
     }
 
     // Mapping to store proposal struct based on their iterator Ids
@@ -56,7 +57,7 @@ contract Governance is
         uint256 _votingDelay,
         uint256 _votingPeriod
     )
-        Governor("DApp University DAO")
+        Governor("RaspBerry DAO")
         GovernorVotes(_token)
         GovernorVotesQuorumFraction(_quorum)
         GovernorTimelockControl(_timelock)
@@ -148,7 +149,8 @@ contract Governance is
             description,
             proposal,
             start,
-            end
+            end,
+            calldatas
         );
         return proposal;
     }

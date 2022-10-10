@@ -1,5 +1,13 @@
 import React from "react";
 import { useEffect, useState } from "react";
+import {
+  useAccount,
+  useConnect,
+  useDisconnect,
+  useEnsAvatar,
+  useEnsName,
+  useNetwork
+} from 'wagmi'
 import { Navbar } from "../components/Navbar.jsx";
 // import Card from "../components/Card";
 import { Sidebar } from "../components/Sidebar";
@@ -23,22 +31,30 @@ const Home = () => {
   const [name, setName] = useState("Fetching data");
   const [symbol, setSymbol] = useState("Fetching data");
   const [released, setReleased] = useState("Fetching data");
-  const [address, setAddress] = useState("Fetching data");
+  const [addressUser, setAddress] = useState("Fetching data");
 
-  let getData = () => {
+  const { address, connector, isConnected } = useAccount()
+  const { chain, chains } = useNetwork()
+
+
+  useEffect( () => {
     setLoading(true)
-    fetchProposalData()
-      .then((result) => {
-        setProposalDataArray(result);
-        setLoading(false);
-      });
-  };
+    console.log("isConnected",isConnected)
+    let fetch = async () =>{
+      if(isConnected){
+        const data = await fetchProposalData()
+        console.log("DATA",data)
+          setProposalDataArray(data);
+      }
+    };
+    fetch()
+  
+  }, [isConnected,chain,loading]);
 
   useEffect(() => {
-    getData();
-  }, []);
-
-  useEffect(() => {
+    if(isConnected){
+      setLoading(false);
+    }
     let fetch = async () => {
       setName(await checkTreasuryName());
       setSymbol(await checkTreasurySymbol());
@@ -49,14 +65,7 @@ const Home = () => {
     fetch();
   });
 
-  console.log(proposalDataArray);
-  console.log(`
-      funds: ${String(funds)}
-      name: ${String(name)}
-      symbol: ${String(symbol)}
-      released: ${String(released)}
-      address: ${String(address)}
-    `);
+  console.log("Prpopsal DATAs",proposalDataArray);
 
   return (
     <div>

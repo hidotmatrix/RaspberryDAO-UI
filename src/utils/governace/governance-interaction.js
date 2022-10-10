@@ -100,7 +100,9 @@ const iface = new ethers.utils.Interface(Treasury.abi);
 const encodedFunction = iface.encodeFunctionData("releaseFunds");
 // console.log("encoded function", encodedFunction);
 // const description = "Release Fund From Treasuryi";
-export const createProposal = async (treasuryContractAddress, description) => {
+export const createProposal = async (treasuryContractAddress, description,fundToRelease) => {
+  const _amount = (ethers.utils.parseEther(fundToRelease)).toString()
+  const encodedFunction = iface.encodeFunctionData("withdrawFunds",[_amount]);
   console.log(signerObj);
   console.log(signer);
   await getSigner();

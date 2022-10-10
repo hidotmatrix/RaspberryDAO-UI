@@ -17,7 +17,7 @@ export const Create = () => {
     setFundDropdown(!fundDropdown);
   };
 
-  const [fundToRelease, setFundToRelease] = useState();
+  const [fundToRelease, setFundToRelease] = useState(0);
 
   const [description, setDescription] = useState("");
 
@@ -100,7 +100,7 @@ export const Create = () => {
                       </div>
                     )}
                   </li>
-                  <li style={{ paddingLeft: "10px" }}>
+                  {/* <li style={{ paddingLeft: "10px" }}>
                     <button
                       type="button"
                       className={styles.dropoptions}
@@ -115,7 +115,7 @@ export const Create = () => {
                     >
                       Remove veto power
                     </button>
-                  </li>
+                  </li> */}
                 </ul>
               </div>
             )}
@@ -142,7 +142,8 @@ export const Create = () => {
               onClick={async () => {
                 await createProposal(
                   process.env.REACT_APP_TREASURY_CONTRACT,
-                  description
+                  description,
+                  fundToRelease
                 );
               }}
             >
