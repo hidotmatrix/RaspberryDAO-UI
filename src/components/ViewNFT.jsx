@@ -1,10 +1,79 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useAccount, useNetwork, useContract, useProvider } from "wagmi";
+import { Alchemy, Network } from "alchemy-sdk";
 import styles from './viewNFT.module.css';
 import { Link } from 'react-router-dom';
 import Dummy from '../Dummy.svg';
 import {BsArrowLeftCircle, BsArrowRightCircle}from 'react-icons/bs';
 
-function viewNFT() {
+function ViewNFT() {
+    const [userNFTs, setUserNFTs] = useState([]);
+    const { chain } = useNetwork();
+    const [img1,setImg1] = useState("")
+    const [img2,setImg2] = useState("")
+    const [img3,setImg3] = useState("")
+    useEffect(() => {
+        async function fetchData() {
+          let config;
+          if (chain) {
+            switch (chain.network) {
+              case "homestead":
+                config = {
+                  apiKey: process.env.REACT_APP_ALCHEMY_API_KEY,
+                  network: Network.ETH_MAINNET,
+                };
+                break;
+              case "matic":
+                config = {
+                  apiKey: process.env.REACT_APP_ALCHEMY_API_KEY,
+                  network: Network.MATIC_MAINNET,
+                };
+                break;
+              case "rinkeby":
+                config = {
+                  apiKey: process.env.REACT_APP_ALCHEMY_API_KEY,
+                  network: Network.ETH_RINKEBY,
+                };
+                break;
+              case "maticmum":
+                config = {
+                  apiKey: process.env.REACT_APP_ALCHEMY_API_KEY,
+                  network: Network.MATIC_MUMBAI,
+                };
+                break;
+              case "Godwoken Testnet":
+                config = {};
+                break;
+            }
+    
+            try {
+              if (chain.network === "homestead") { 
+                const alchemy = new Alchemy(config);
+                // Wallet address
+                const address = "elanhalpern.eth"; // static address
+    
+                // Get all NFTs
+                const nfts = await alchemy.nft.getNftsForOwner(address);
+                setUserNFTs(nfts["ownedNfts"]);
+                // Parse output
+                let numNfts = nfts["totalCount"];
+                const nftList = nfts["ownedNfts"];  
+                if(numNfts%2!==0){
+                    numNfts-=1;
+                }
+                if(numNfts>=2){
+                   setImg1(nftList[numNfts/2-1].media[0].gateway)
+                   setImg2(nftList[numNfts/2].media[0].gateway)
+                   setImg3(nftList[numNfts/2+1].media[0].gateway)
+                }
+    
+                console.log(`Total NFTs owned by ${address}: ${numNfts} \n`);
+            } else {}
+            } catch (error) {}
+          }
+        }
+        fetchData();
+      }, [chain, userNFTs]);
     return (
         <div className={styles.nftbox}>
             <div className={styles.nftheadingandview}>
@@ -18,13 +87,13 @@ function viewNFT() {
                     <BsArrowLeftCircle/>
                 </div>
                 <div className={styles.leftimage}>
-                    <img src={Dummy} alt="Dummy-Image"></img>
+                    <img src={img1} alt="Dummy-Image"></img>
                 </div>
                 <div className={styles.mainimage}>
-                    <img src={Dummy} alt="Dummy-Image"></img>
+                    <img src={img2} alt="Dummy-Image"></img>
                 </div>
                 <div className={styles.rightimage}>
-                    <img src={Dummy} alt="Dummy-Image"></img>
+                    <img src={img3} alt="Dummy-Image"></img>
                 </div>
                 <div className={styles.rightarrow}>
                     <BsArrowRightCircle/>
@@ -34,4 +103,4 @@ function viewNFT() {
     )
 }
 
-export default viewNFT
+export default ViewNFT;

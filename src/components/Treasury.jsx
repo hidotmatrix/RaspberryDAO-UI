@@ -6,6 +6,7 @@ import {
   fundsInsideTreasury,
 } from "../utils/governace/governance-interaction";
 import logo from '../solana.svg';
+import matic from "../polygon.svg"
 import Tokens from "./Tokens";
 
 const Treasury = () => {
@@ -95,19 +96,19 @@ const Treasury = () => {
                     width: "24px", borderRadius: "100%", backgroundColor: "black", marginRight:
                       "6px", position: "relative", height: "22px", display: "flex", alignItems: "center", justifyContent: "center"
                   }}>
-                    <img src={logo} alt="Logo" style={{ zIndex: "10", position: "absolute", width: "16px" }}></img>
+                    <img src={matic} alt="Logo" style={{ zIndex: "10", position: "absolute", width: "16px" }}></img>
                   </div>
                   <div style={{
                     width: "24px", borderRadius: "100%", backgroundColor: "black", marginRight:
                       "6px", position: "relative", height: "22px", display: "flex", alignItems: "center", justifyContent: "center"
                   }}>
-                    <img src={logo} alt="Logo" style={{ zIndex: "10", position: "absolute", width: "16px" }}></img>
+                    <img src={matic} alt="Logo" style={{ zIndex: "10", position: "absolute", width: "16px" }}></img>
                   </div>
                   <div style={{
                     width: "24px", borderRadius: "100%", backgroundColor: "black", marginRight:
                       "6px", position: "relative", height: "22px", display: "flex", alignItems: "center", justifyContent: "center"
                   }}>
-                    <img src={logo} alt="Logo" style={{ zIndex: "10", position: "absolute", width: "16px" }}></img>
+                    <img src={matic} alt="Logo" style={{ zIndex: "10", position: "absolute", width: "16px" }}></img>
                   </div>
                   <div style={{ color: "white", fontSize: "10px" }}>+3</div>
                 </div>

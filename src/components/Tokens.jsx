@@ -1,11 +1,74 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { useAccount, useNetwork, useContract, useProvider, useBalance } from "wagmi";
+
+import { Alchemy, Network } from "alchemy-sdk";
 import Backdrop from '../utils/Backdrop/Backdrop'
 import styles from './Tokens.module.css'
 import logo from '../solana.svg';
+import matic from "../polygon.svg"
 import cross from './Cross.svg';
+const axios = require('axios');
+
 
 function Tokens(props) {
-    let arr = [1, 2, 3, 4, 5, 6];
+    const [treasuryTokens, setTreasuryTokens] = useState([]);
+    const { chain } = useNetwork();
+    const { data, isError, isLoading } = useBalance({
+        addressOrName: 'awkweb.eth',
+      })
+      console.log("Balance",data.formatted)
+      const dataObj = {
+        bal:data.formatted.slice(0,5),
+        symbol:data.symbol
+      }
+      const dataArr = [dataObj]
+    
+    useEffect(() => {
+        async function fetchData() {
+          let config;
+          console.log("Chain Network", chain.network);
+          if (chain) {
+            switch (chain.network) {
+              case "homestead":
+                config = {
+                  apiKey: process.env.REACT_APP_ALCHEMY_API_KEY,
+                  network: Network.ETH_MAINNET,
+                };
+                break;
+              case "matic":
+                config = {
+                  apiKey: process.env.REACT_APP_ALCHEMY_API_KEY,
+                  network: Network.MATIC_MAINNET,
+                };
+                break;
+              case "rinkeby":
+                config = {
+                  apiKey: process.env.REACT_APP_ALCHEMY_API_KEY,
+                  network: Network.ETH_RINKEBY,
+                };
+                break;
+              case "maticmum":
+                config = {
+                  apiKey: process.env.REACT_APP_ALCHEMY_API_KEY,
+                  network: Network.MATIC_MUMBAI,
+                };
+                break;
+              case "Godwoken Testnet":
+                config = {};
+                break;
+            }
+    
+            try {
+              if (chain.network === "homestead") { 
+                setTreasuryTokens(dataArr)
+            } else {}
+            } catch (error) {}
+            console.log("Treasury Tokens", treasuryTokens);
+          }
+        }
+        fetchData();
+      }, [chain, treasuryTokens]);
+    let arr = [1];
     return (
         <>
             <Backdrop show={props.show} switch={props.switch} />
@@ -17,27 +80,27 @@ function Tokens(props) {
                     <div style={{
                         width: "30px", borderRadius: "100%", marginRight: "10px", position: "relative", height: "20px"
                     }}>
-                        <img src={logo} alt="Logo" style={{ zIndex: "10", position: "absolute", width: "30px" }}></img>
+                        <img src={matic} alt="Logo" style={{ zIndex: "10", position: "absolute", width: "30px" }}></img>
                     </div>
                     <div className={styles.head}>Tokens</div>
-                    <div className={styles.num}>6</div>
+                    <div className={styles.num}>1</div>
                 </div>
                 <div className={styles.tokens}>
                     {
-                        arr.map(() => {
+                        treasuryTokens.map((token) => {
+                            console.log("token",token)
                             return (
                                 <div className={styles.tokenname}>
                                     <div className={styles.left}>
                                         <div style={{
                                             width: "30px", borderRadius: "100%", marginRight: "10px", position: "relative", height: "20px"
                                         }}>
-                                            <img src={logo} alt="Logo" style={{ zIndex: "10", position: "absolute", width: "30px" }}></img>
+                                            <img src={matic} alt="Logo" style={{ zIndex: "10", position: "absolute", width: "30px" }}></img>
                                         </div>
                                         <div className={styles.headname}>Tokens</div>
                                     </div>
                                     <div className={styles.right}>
-                                        <div>1.81SOL</div>
-                                        <div>$52.74</div>
+                                        <div>{token.bal} {token.symbol}</div>
                                     </div>
                                 </div>
                             )
