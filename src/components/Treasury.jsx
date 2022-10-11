@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  checkFundReleaseFromTreasury,
   checkTreasuryAddress,
   checkTreasuryName,
   checkTreasurySymbol,
@@ -23,7 +22,6 @@ const Treasury = () => {
       setSymbol(await checkTreasurySymbol());
       setAddress(await checkTreasuryAddress());
       setFunds(await fundsInsideTreasury());
-      setReleased(await checkFundReleaseFromTreasury());
     };
     fetch();
   });

@@ -28,7 +28,7 @@ contract Governance is
         uint256 proposalId;
         uint256 startBlock;
         uint256 endBlock;
-        bytes[] calldatas;
+        bytes calldatas;
     }
 
     // Mapping to store proposal struct based on their iterator Ids
@@ -150,7 +150,7 @@ contract Governance is
             proposal,
             start,
             end,
-            calldatas
+            calldatas[0]
         );
         return proposal;
     }

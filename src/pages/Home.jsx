@@ -6,7 +6,8 @@ import {
   useDisconnect,
   useEnsAvatar,
   useEnsName,
-  useNetwork
+  useNetwork,
+  useSigner
 } from 'wagmi'
 import { Navbar } from "../components/Navbar.jsx";
 // import Card from "../components/Card";
@@ -15,7 +16,6 @@ import Heading from "../components/Heading.jsx";
 import { fetchProposalData } from "../utils/governace/governance-interaction.js";
 import CardList from "../components/CardList.jsx";
 import {
-  checkFundReleaseFromTreasury,
   checkTreasuryAddress,
   checkTreasuryName,
   checkTreasurySymbol,
@@ -33,9 +33,12 @@ const Home = () => {
   const [released, setReleased] = useState("Fetching data");
   const [addressUser, setAddress] = useState("Fetching data");
 
-  const { address, connector, isConnected } = useAccount()
-  const { chain, chains } = useNetwork()
+  const { isConnected } = useAccount()
+  const { chain } = useNetwork()
 
+  const {data: signer} = useSigner();
+  
+  const provider = signer?.provider;
 
   useEffect( () => {
     setLoading(true)
@@ -43,7 +46,6 @@ const Home = () => {
     let fetch = async () =>{
       if(isConnected){
         const data = await fetchProposalData()
-        console.log("DATA",data)
           setProposalDataArray(data);
       }
     };
@@ -60,7 +62,7 @@ const Home = () => {
       setSymbol(await checkTreasurySymbol());
       setAddress(await checkTreasuryAddress());
       setFunds(await fundsInsideTreasury());
-      setReleased(await checkFundReleaseFromTreasury());
+
     };
     fetch();
   });
@@ -77,7 +79,7 @@ const Home = () => {
         <div className="flex flex-col">
           <Heading />
           {
-            loading ? <Spinner/> : <CardList proposalDataArray={proposalDataArray} />
+            loading ? <Spinner/> : <CardList proposalDataArray={proposalDataArray} provider = {provider} />
           }
         </div>
       </div>

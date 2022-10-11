@@ -58,9 +58,12 @@ const getSigner = async () => {
 export const delegateGovernanceToken = async () => {
   try {
     await getSigner();
-    console.log(signer);
-    console.log("provider", provider);
-    await tokenContractInstance.connect(signerObj).delegate(signer);
+    const getVotes = await tokenContractInstance.getVotes(signer);
+    const votes = ethers.utils.formatUnits(getVotes.toString(),"ether");
+
+    if(Number(votes.toString())===0){
+     await tokenContractInstance.connect(signerObj).delegate(signer)
+    }
   } catch (err) {
     console.log(err);
   }
@@ -72,11 +75,6 @@ export const fundsInsideTreasury = async () => {
   let parseFunds = ethers.utils.formatEther(String(funds));
   console.log(parseFunds);
   return parseFunds;
-};
-
-// check is funds released from treasury
-export const checkFundReleaseFromTreasury = async () => {
-  return await treasuryContractInstance.connect(provider).isReleased();
 };
 
 // treausy address
@@ -97,18 +95,22 @@ export const checkTreasurySymbol = async () => {
 // create proposal
 const iface = new ethers.utils.Interface(Treasury.abi);
 // console.log(iface);
-const encodedFunction = iface.encodeFunctionData("releaseFunds");
+const _amount = "100"
+const encodedFunction = iface.encodeFunctionData("withdrawFunds",[_amount]);
 // console.log("encoded function", encodedFunction);
 // const description = "Release Fund From Treasuryi";
 export const createProposal = async (treasuryContractAddress, description,fundToRelease) => {
   const _amount = (ethers.utils.parseEther(fundToRelease)).toString()
-  const encodedFunction = iface.encodeFunctionData("withdrawFunds",[_amount]);
+  const encodedFunctionLocalScope = iface.encodeFunctionData("withdrawFunds",[_amount]);
+  console.log("Encode Function bytes",encodedFunctionLocalScope)
   console.log(signerObj);
   console.log(signer);
   await getSigner();
+  console.log(signerObj);
+  console.log(signer);
   let tx = await governanceContractInstance
     .connect(signerObj)
-    .propose([treasuryContractAddress], [0], [encodedFunction], description);
+    .propose([treasuryContractAddress], [0], [encodedFunctionLocalScope], description);
   let txReceipt = await tx.wait(1);
   console.log(txReceipt);
   let id = await txReceipt.events[0].args.proposalId;
@@ -121,11 +123,13 @@ export const getProposalState = async (proposalId) => {
 };
 
 // show in UI - quorum(min number of votes required)
-export const getQuorum = async () => {
+export const getQuorum = async (provider) => {
   let blockNumber = await provider.getBlockNumber();
+  console.log("Block Number",blockNumber);
   let quorum = await governanceContractInstance
     .connect(provider)
     .quorum(blockNumber - 1);
+  console.log("Quorom",quorum.toString())  
   let parseQuorum = ethers.utils.formatEther(String(quorum));
   return parseQuorum;
 };
@@ -143,6 +147,7 @@ export const castVoteAndParticipate = async (id, vote) => {
 export const getVoteStatics = async (id) => {
   let { againstVotes, forVotes, abstainVotes } =
     await governanceContractInstance.connect(provider).proposalVotes(id);
+    console.log("Votes Details",againstVotes,forVotes,abstainVotes,id)
   let voteAgainst = Math.trunc(ethers.utils.formatEther(String(againstVotes)));
   let voteFor = Math.trunc(ethers.utils.formatEther(String(forVotes)));
   let voteAbstain = Math.trunc(ethers.utils.formatEther(String(abstainVotes)));
@@ -192,13 +197,14 @@ export const fetchProposalData = async () => {
         let data = await governanceContractInstance
           .connect(provider)
           .proposals(i);
-          console.log(data);
+          console.log("Prpoposal Info",data);
         let parseData = {
           id: String(data[0]),
           description: data[1],
           pId: String(data[2]),
           start: String(data[3]),
           end: String(data[4]),
+          calldatas:String(data[5]),
         };
         proposalData.push(parseData);
       }

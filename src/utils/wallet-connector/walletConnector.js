@@ -15,7 +15,7 @@ export const { chains, provider } = configureChains(
     chain.arbitrum,
   ],
   [
-    alchemyProvider({ alchemyId: process.env.ALCHEMY_ID }), // zUssq5K8tyjkpvaNDtbVYjHmjcchOgXF
+    alchemyProvider({ alchemyId: process.env.REACT_APP_ALCHEMY_ID }), // zUssq5K8tyjkpvaNDtbVYjHmjcchOgXF
     publicProvider(),
   ]
 );

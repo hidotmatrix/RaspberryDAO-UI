@@ -2,7 +2,7 @@ import React from 'react'
 import Card from './Card';
 
 export default function CardList(props) {
-    const {proposalDataArray} = props;
+    const {proposalDataArray,provider} = props;
     console.log(proposalDataArray);
   return (
     <div>
@@ -10,7 +10,7 @@ export default function CardList(props) {
             console.log("data", data);
             return (
                 <div key={index}>
-                   <Card data={data} index={index} />
+                   <Card data={data} index={index} provider={provider}/>
                 </div> 
             )
         })}

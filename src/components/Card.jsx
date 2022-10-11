@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
+import {
+  useAccount,
+  useConnect,
+  useDisconnect,
+  useEnsAvatar,
+  useEnsName,
+  useNetwork
+} from 'wagmi'
 import "./PopupStyles.css";
 import {
   getProposalState,
@@ -11,7 +19,7 @@ import {
 import moment from "moment";
 
 const Card = (props) => {
-  const { data, index } = props;
+  const { data, index ,provider} = props;
   const [modal, setModal] = useState(false);
   const [proposalState, setProposalState] = useState();
   const [proposalStateString, setproposalStateString] = useState("");
@@ -22,16 +30,19 @@ const Card = (props) => {
   const [signer, setSigner] = useState();
   const [timeLeft, setTimeLeft] = useState();
 
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const { isConnected } = useAccount()
+  const { chain } = useNetwork()
 
   const toggleModal = () => {
     setModal(!modal);
   };
 
-  let fetchTimeLeft = () => {
+  let fetchTimeLeft = async () => {
+    let currblockNumber = await provider.getBlockNumber();
     let endBlock = data.end;
     let startBlock = data.start;
-    let blockDifference = endBlock - startBlock;
+    console.log("Blocks",startBlock,currblockNumber)
+    let blockDifference = Number(endBlock) - Number(startBlock);
     let timeRate = blockDifference * 15;
     let timeOutput = timeRate / 60;
     let momentMin = moment.duration(timeOutput, "minutes").humanize();
@@ -56,7 +67,6 @@ const Card = (props) => {
      * 6 - Expired
      * 7 - Executed
      */
-    console.log("inside output:", proposalState);
     if (proposalState === 0) {
       return "Pending";
     } else if (proposalState === 1) {
@@ -86,17 +96,22 @@ const Card = (props) => {
   }, [proposalStateOutput]);
 
   useEffect(() => {
-    setTimeLeft(fetchTimeLeft());
+    let fetch = async ()=>{
+      setTimeLeft(await fetchTimeLeft());
+    }
+    
+    fetch()
   });
 
   useEffect(() => {
-    getQuorum().then((result) => {
+    getQuorum(provider).then((result) => {
       setQuorumState(result);
     });
   });
 
   useEffect(() => {
     getVoteStatics(data.pId).then((result) => {
+      console.log("Result",result)
       setVotesFor(result.voteFor);
       setVotesAgainst(result.voteAgainst);
       setVotesAbstain(result.voteAbstain);
