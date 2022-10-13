@@ -122,7 +122,9 @@ export const Create = () => {
           </div>
           <div className={styles.treasury}>
             <label className={styles.heading}>Treasury Address</label>
-            <div className={styles.field}>{process.env.REACT_APP_TREASURY_CONTRACT}</div>
+            <div className={styles.field}>
+              {process.env.REACT_APP_TREASURY_CONTRACT}
+            </div>
           </div>
           <div className={styles.description}>
             <label className={styles.heading}>Description</label>
@@ -149,7 +151,7 @@ export const Create = () => {
             >
               Create
             </button>
-            <button
+            {/* <button
               type="button"
               className={styles.queueButton}
               onClick={async () => {
@@ -172,7 +174,7 @@ export const Create = () => {
               }}
             >
               Execute
-            </button>
+            </button> */}
           </div>
         </form>
       </div>

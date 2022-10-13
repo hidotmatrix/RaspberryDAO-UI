@@ -152,10 +152,9 @@ export const getVoteStatics = async (id) => {
 };
 
 // create queue for the proposal
-export const queueGovernance = async () => {
+export const queueGovernance = async (treasuryContract,description,encodedFunction) => {
   
-  let hash =
-    "0xc7d305603a21f5c8583039820cc493f6f7f82ba1ff58b47f8138d2b8a441444c";
+  const hash = ethers.utils.id(description)
   await getSigner();
   await governanceContractInstance
     .connect(signerObj)
@@ -163,9 +162,8 @@ export const queueGovernance = async () => {
 };
 
 // create execute the proposal
-export const executeGovernance = async () => {
-  let hash =
-    "0xc7d305603a21f5c8583039820cc493f6f7f82ba1ff58b47f8138d2b8a441444c";
+export const executeGovernance = async (treasuryContract,description,encodedFunction) => {
+  const hash = ethers.utils.id(description)
   await getSigner();
   await governanceContractInstance
     .connect(signerObj)

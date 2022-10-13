@@ -8,7 +8,7 @@ import {
   useEnsName,
   useNetwork,
   useContractRead,
-  useBlockNumber
+  useBlockNumber,
 } from 'wagmi'
 import "./PopupStyles.css";
 import {
@@ -17,9 +17,11 @@ import {
   getVoteStatics,
   delegateGovernanceToken,
   castVoteAndParticipate,
+  queueGovernance,
+  executeGovernance,
 } from "../utils/governace/governance-interaction.js";
 import moment from "moment";
-import { GOVERNANCE_CONRACT_ADDRESS } from "../constants/constants";
+import { GOVERNANCE_CONRACT_ADDRESS, TREASURY_CONTRACT_ADDRESS } from "../constants/constants";
 import ABI from "../contracts/Governance.json"
 
 const Card = (props) => {
@@ -72,6 +74,9 @@ const Card = (props) => {
       console.log('Success Votes', data)
     },
   })
+
+  const hashh = ethers.utils.id("Release Funds from Treasury")
+  console.log("Ether hash",hashh)
 
   const { isConnected } = useAccount()
   const { chain } = useNetwork()
@@ -160,65 +165,139 @@ const Card = (props) => {
               <div className="modal-left">
                 <div className="modal-heading">{data.description}</div>
                 <div className="modal-description">
-                  <div className="modal-subheading">
-                    Static Data Below...
-                  </div>
+                  <div className="modal-subheading">Static Data Below...</div>
                   <div className="modal-subdescription">
                     DAOs are an effective and safe way to work with like-minded
                     folks around the globe.
                   </div>
                 </div>
                 <div className="modal-quorum">
-                  <div className="quorum-heading">Quorum <span style={{ marginLeft: "5px" }}>:</span></div>
+                  <div className="quorum-heading">
+                    Quorum <span style={{ marginLeft: "5px" }}>:</span>
+                  </div>
                   <button className="quorum-button">{quorumState}</button>
                 </div>
                 <div className="modal-proposer">
                   <div className="proposer-heading">Proposer :</div>
-                  <button className="quorum-button">0xd32210cDFAD71568503c5c1ef7C2e6d0f33F3c1b</button>
+                  <button className="quorum-button">
+                    0xd32210cDFAD71568503c5c1ef7C2e6d0f33F3c1b
+                  </button>
                 </div>
               </div>
               <div className="modal-right">
                 <div className="vote-status-box ">
                   <ul className="px-8 w-54 text-sm text-gray-400 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <li className="py-4 px-4 w-full border-b border-gray-200 dark:border-gray-600 text-center" style={{ fontSize: "20px", fontWeight: "600" }}>
+                    <li
+                      className="py-4 px-4 w-full border-b border-gray-200 dark:border-gray-600 text-center"
+                      style={{ fontSize: "20px", fontWeight: "600" }}
+                    >
                       Voting Stats
                     </li>
-                    <li className="py-4 px-4 w-full rounded-t-lg border-b border-gray-200 dark:border-gray-600" style={{ fontSize: "16px", fontWeight: "400" }}>
+                    <li
+                      className="py-4 px-4 w-full rounded-t-lg border-b border-gray-200 dark:border-gray-600"
+                      style={{ fontSize: "16px", fontWeight: "400" }}
+                    >
                       For: {votesFor}
                     </li>
-                    <li className="py-4 px-4 w-full border-b border-gray-200 dark:border-gray-600" style={{ fontSize: "16px", fontWeight: "400" }}>
+                    <li
+                      className="py-4 px-4 w-full border-b border-gray-200 dark:border-gray-600"
+                      style={{ fontSize: "16px", fontWeight: "400" }}
+                    >
                       Against: {votesAgainst}
                     </li>
-                    <li className="py-4 px-4 w-full border-b border-gray-200 dark:border-gray-600" style={{ fontSize: "16px", fontWeight: "400" }}>
+                    <li
+                      className="py-4 px-4 w-full border-b border-gray-200 dark:border-gray-600"
+                      style={{ fontSize: "16px", fontWeight: "400" }}
+                    >
                       Abstain: {votesAbstain}
                     </li>
                   </ul>
                 </div>
                 {/* <hr /> */}
-                <div className="modal-place">Place your vote here:</div>
+                {proposalState === 1 ? (
+                  <div className="modal-place">Place your vote here:</div>
+                ) : (
+                  <div className="modal-place">Voting has been closed!</div>
+                )}
                 <div className="modal-buttons">
-                  <button type="button" className="for-button" onClick={async () => {
-                    await delegateGovernanceToken();
-                    await castVoteAndParticipate(data.pId, 1);
-                  }}>
-                    For
-                  </button>
+                  {proposalState === 1 ? (
+                    <button
+                      type="button"
+                      className="for-button"
+                      onClick={async () => {
+                        await delegateGovernanceToken();
+                        await castVoteAndParticipate(data.pId, 1);
+                      }}
+                    >
+                      For
+                    </button>
+                  ) : (
+                    ""
+                  )}
 
-                  <button type="button" className="abstain-button" onClick={async () => {
-                    await delegateGovernanceToken();
-                    await castVoteAndParticipate(data.pId, 2);
-                  }}
-                  >
-                    Abstain
-                  </button>
+                  {proposalState === 1 ? (
+                    <button
+                      type="button"
+                      className="abstain-button"
+                      onClick={async () => {
+                        await delegateGovernanceToken();
+                        await castVoteAndParticipate(data.pId, 2);
+                      }}
+                    >
+                      Abstain
+                    </button>
+                  ) : (
+                    ""
+                  )}
 
-                  <button type="button" className="against-button" onClick={async () => {
-                    await delegateGovernanceToken();
-                    await castVoteAndParticipate(data.pId, 0);
-                  }}
-                  >
-                    Against
-                  </button>
+                  {proposalState === 1 ? (
+                    <button
+                      type="button"
+                      className="against-button"
+                      onClick={async () => {
+                        await delegateGovernanceToken();
+                        await castVoteAndParticipate(data.pId, 0);
+                      }}
+                    >
+                      Against
+                    </button>
+                  ) : (
+                    ""
+                  )}
+                  {proposalState === 4 ? (
+                    <button
+                      type="button"
+                      className="queue-button"
+                      onClick={async () => {
+                        await queueGovernance(
+                          process.env.REACT_APP_TREASURY_CONTRACT,
+                          data.description,
+                          data.calldatas
+                        );
+                      }}
+                    >
+                      Queue
+                    </button>
+                  ) : (
+                    ""
+                  )}
+                  {proposalState === 5 ? (
+                    <button
+                      type="button"
+                      className="execute-button"
+                      onClick={async () => {
+                        await executeGovernance(
+                          process.env.REACT_APP_TREASURY_CONTRACT,
+                          data.description,
+                          data.calldatas
+                        );
+                      }}
+                    >
+                      Execute
+                    </button>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </div>
             </div>
@@ -253,7 +332,6 @@ const Card = (props) => {
           and voting to ensure everyone in the organization has a voice.
         </p>
         <p className="font-normal text-gray-400">
-
           <b> Ends In: {timeLeft} </b>
         </p>
       </a>
