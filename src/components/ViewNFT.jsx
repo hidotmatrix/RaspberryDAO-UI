@@ -8,6 +8,7 @@ import {BsArrowLeftCircle, BsArrowRightCircle}from 'react-icons/bs';
 
 function ViewNFT() {
     const [userNFTs, setUserNFTs] = useState([]);
+    const {address} = useAccount()
     const { chain } = useNetwork();
     const [img1,setImg1] = useState("")
     const [img2,setImg2] = useState("")
@@ -61,10 +62,15 @@ function ViewNFT() {
                 if(numNfts%2!==0){
                     numNfts-=1;
                 }
-                if(numNfts>=2){
+                if(numNfts>2){
                    setImg1(nftList[numNfts/2-1].media[0].gateway)
                    setImg2(nftList[numNfts/2].media[0].gateway)
                    setImg3(nftList[numNfts/2+1].media[0].gateway)
+                }
+                else {
+                  setImg1(Dummy)
+                  setImg2(Dummy)
+                  setImg3(Dummy)
                 }
     
                 console.log(`Total NFTs owned by ${address}: ${numNfts} \n`);

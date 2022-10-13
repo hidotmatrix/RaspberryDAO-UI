@@ -7,7 +7,10 @@ import {
   useEnsAvatar,
   useEnsName,
   useNetwork,
-  useSigner
+  useSigner,
+  useContractRead,
+  useContractReads,
+  useContract
 } from 'wagmi'
 import { Navbar } from "../components/Navbar.jsx";
 // import Card from "../components/Card";
@@ -22,10 +25,26 @@ import {
   fundsInsideTreasury,
 } from "../utils/governace/governance-interaction";
 import Spinner from "../utils/Spinner/Spinner.jsx";
+import ABI from "../contracts/Governance.json"
+import { GOVERNANCE_CONRACT_ADDRESS } from "../constants/constants.js";
 
 const Home = () => {
+
+  const {data: signer} = useSigner();
+  
+  const provider = signer?.provider;
+
+  const contractRead1 = useContractRead({
+    addressOrName: GOVERNANCE_CONRACT_ADDRESS,
+    contractInterface: ABI.abi,
+    functionName: 'proposalIterator',
+    onSuccess(data) {
+      console.log('Success', data.toString())
+    },
+  })
+
   const [proposalDataArray, setProposalDataArray] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   // const [isRendering, setRendering] = useState(false);
   const [funds, setFunds] = useState("Fetching data");
   const [name, setName] = useState("Fetching data");
@@ -36,39 +55,23 @@ const Home = () => {
   const { isConnected } = useAccount()
   const { chain } = useNetwork()
 
-  const {data: signer} = useSigner();
-  
-  const provider = signer?.provider;
+ 
 
   useEffect( () => {
-    setLoading(true)
-    console.log("isConnected",isConnected)
     let fetch = async () =>{
       if(isConnected){
-        const data = await fetchProposalData()
+        setName(await checkTreasuryName());
+        setSymbol(await checkTreasurySymbol());
+        setAddress(await checkTreasuryAddress());
+        setFunds(await fundsInsideTreasury());
+        const data = await fetchProposalData(Number(contractRead1.data.toString()))
           setProposalDataArray(data);
+          setLoading(false)
       }
     };
     fetch()
   
-  }, [isConnected,chain,loading]);
-
-  useEffect(() => {
-    if(isConnected){
-      setLoading(false);
-    }
-    let fetch = async () => {
-      setName(await checkTreasuryName());
-      setSymbol(await checkTreasurySymbol());
-      setAddress(await checkTreasuryAddress());
-      setFunds(await fundsInsideTreasury());
-
-    };
-    fetch();
-  });
-
-  console.log("Prpopsal DATAs",proposalDataArray);
-
+  }, [isConnected]);
   return (
     <div>
       <Navbar />

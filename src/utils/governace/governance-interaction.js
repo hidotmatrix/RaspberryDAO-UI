@@ -125,11 +125,9 @@ export const getProposalState = async (proposalId) => {
 // show in UI - quorum(min number of votes required)
 export const getQuorum = async (provider) => {
   let blockNumber = await provider.getBlockNumber();
-  console.log("Block Number",blockNumber);
   let quorum = await governanceContractInstance
     .connect(provider)
-    .quorum(blockNumber - 1);
-  console.log("Quorom",quorum.toString())  
+    .quorum(blockNumber - 2);
   let parseQuorum = ethers.utils.formatEther(String(quorum));
   return parseQuorum;
 };
@@ -147,11 +145,9 @@ export const castVoteAndParticipate = async (id, vote) => {
 export const getVoteStatics = async (id) => {
   let { againstVotes, forVotes, abstainVotes } =
     await governanceContractInstance.connect(provider).proposalVotes(id);
-    console.log("Votes Details",againstVotes,forVotes,abstainVotes,id)
   let voteAgainst = Math.trunc(ethers.utils.formatEther(String(againstVotes)));
   let voteFor = Math.trunc(ethers.utils.formatEther(String(forVotes)));
   let voteAbstain = Math.trunc(ethers.utils.formatEther(String(abstainVotes)));
-  console.log("votes:", voteAgainst, voteFor, voteAbstain);
   return { voteAgainst, voteFor, voteAbstain };
 };
 
@@ -183,21 +179,19 @@ export const fetchProposalLength = async () => {
   );
 };
 
-let startResult = 0;
-let proposalData = [];
-export const fetchProposalData = async () => {
+
+export const fetchProposalData = async (result) => {
+  let startResult = 0;
+  let proposalData = [];
   const dataLength = await fetchProposalLength();
   if(dataLength === proposalData.length) {
     return;
-  } 
-  fetchProposalLength().then(async (result) => {
-    
-    if (result > startResult) {
+  }   
+  if (result > startResult) {
       for (let i = 1; i <= result; i++) {
         let data = await governanceContractInstance
           .connect(provider)
           .proposals(i);
-          console.log("Prpoposal Info",data);
         let parseData = {
           id: String(data[0]),
           description: data[1],
@@ -210,6 +204,5 @@ export const fetchProposalData = async () => {
       }
       startResult = result;
     }
-  });
   return proposalData;
 };

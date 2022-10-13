@@ -11,7 +11,6 @@ function AllNFT() {
     useEffect(() => {
         async function fetchData() {
           let config;
-          console.log("Chain Network", chain.network);
           if (chain) {
             switch (chain.network) {
               case "homestead":
@@ -48,6 +47,7 @@ function AllNFT() {
                 const alchemy = new Alchemy(config);
                 // Wallet address
                 const address = "elanhalpern.eth"; // static address
+                //const address = "0xabAB8096c7C9922F991772164311Ba862bCE7622"
     
                 // Get all NFTs
                 const nfts = await alchemy.nft.getNftsForOwner(address);
@@ -58,11 +58,7 @@ function AllNFT() {
                 console.log(`Total NFTs owned by ${address}: ${numNfts} \n`);
             } else {}
             } catch (error) {}
-            console.log("User NFTs", userNFTs);
           }
-    
-          console.log("Chain", chain);
-          console.log("useEffect called");
         }
         fetchData();
       }, [chain, userNFTs]);
@@ -89,7 +85,7 @@ function AllNFT() {
                     
                     {userNFTs.map((nft, index) => {
                   return (
-                    <img src={nft.media[0].gateway} alt="Dummy-NFT" className={styles.nftimage}></img>
+                    nft.media.length!=0? <img src={nft.media[0].gateway} alt="Dummy-NFT" className={styles.nftimage}></img>: <img src={Dummy} alt="Dummy-NFT" className={styles.nftimage}></img>
                   );
                 })}
                 </div>

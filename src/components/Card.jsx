@@ -6,7 +6,9 @@ import {
   useDisconnect,
   useEnsAvatar,
   useEnsName,
-  useNetwork
+  useNetwork,
+  useContractRead,
+  useBlockNumber
 } from 'wagmi'
 import "./PopupStyles.css";
 import {
@@ -17,8 +19,12 @@ import {
   castVoteAndParticipate,
 } from "../utils/governace/governance-interaction.js";
 import moment from "moment";
+import { GOVERNANCE_CONRACT_ADDRESS } from "../constants/constants";
+import ABI from "../contracts/Governance.json"
 
 const Card = (props) => {
+  const BlockInfo = useBlockNumber()
+
   const { data, index ,provider} = props;
   const [modal, setModal] = useState(false);
   const [proposalState, setProposalState] = useState();
@@ -30,7 +36,44 @@ const Card = (props) => {
   const [signer, setSigner] = useState();
   const [timeLeft, setTimeLeft] = useState();
 
-    const { isConnected } = useAccount()
+  const contractReadForQuorom = useContractRead({
+    addressOrName: GOVERNANCE_CONRACT_ADDRESS,
+    contractInterface: ABI.abi,
+    functionName: 'quorum',
+    args:[BlockInfo.data-2],
+    onSuccess(data) {
+      const parseQuorum = ethers.utils.formatEther(data.toString());
+      setQuorumState(parseQuorum)
+      console.log('Success', data.toString())
+    },
+  })
+
+  const contractReadForPorposalState = useContractRead({
+    addressOrName: GOVERNANCE_CONRACT_ADDRESS,
+    contractInterface: ABI.abi,
+    functionName: 'state',
+    args:[data.pId],
+    onSuccess(data) {
+      setProposalState(data);
+      setproposalStateString(proposalStateOutput());
+      console.log('Success State', data)
+    },
+  })
+
+  const contractReadForPorposalVotes = useContractRead({
+    addressOrName: GOVERNANCE_CONRACT_ADDRESS,
+    contractInterface: ABI.abi,
+    functionName: 'proposalVotes',
+    args:[data.pId],
+    onSuccess(data) {
+      setVotesFor(ethers.utils.formatEther(data.forVotes.toString()));
+      setVotesAgainst(ethers.utils.formatEther(data.againstVotes.toString()));
+      setVotesAbstain(ethers.utils.formatEther(data.abstainVotes.toString()));
+      console.log('Success Votes', data)
+    },
+  })
+
+  const { isConnected } = useAccount()
   const { chain } = useNetwork()
 
   const toggleModal = () => {
@@ -41,11 +84,10 @@ const Card = (props) => {
     let currblockNumber = await provider.getBlockNumber();
     let endBlock = data.end;
     let startBlock = data.start;
-    console.log("Blocks",startBlock,currblockNumber)
-    let blockDifference = Number(endBlock) - Number(startBlock);
-    let timeRate = blockDifference * 15;
+    let blockDifference = Number(endBlock)>Number(currblockNumber)?Number(endBlock) - Number(currblockNumber):0;
+    let timeRate = blockDifference * 2;
     let timeOutput = timeRate / 60;
-    let momentMin = moment.duration(timeOutput, "minutes").humanize();
+    let momentMin = blockDifference===0? "Already Ended" :moment.duration(timeOutput, "minutes").humanize();
     return String(momentMin);
   };
 
@@ -55,7 +97,7 @@ const Card = (props) => {
     document.body.classList.remove("active-modal");
   }
 
-  let proposalStateOutput = () => {
+  const proposalStateOutput = () => {
     // States:
     /**
      * 0 - Pending
@@ -89,10 +131,7 @@ const Card = (props) => {
   };
 
   useEffect(() => {
-    getProposalState(data.pId).then((result) => {
-      setProposalState(result);
-      setproposalStateString(proposalStateOutput());
-    });
+    setproposalStateString(proposalStateOutput());
   }, [proposalStateOutput]);
 
   useEffect(() => {
@@ -102,30 +141,6 @@ const Card = (props) => {
     
     fetch()
   });
-
-  useEffect(() => {
-    getQuorum(provider).then((result) => {
-      setQuorumState(result);
-    });
-  });
-
-  useEffect(() => {
-    getVoteStatics(data.pId).then((result) => {
-      console.log("Result",result)
-      setVotesFor(result.voteFor);
-      setVotesAgainst(result.voteAgainst);
-      setVotesAbstain(result.voteAbstain);
-    });
-  });
-
-  useEffect(() => {
-    provider.send("eth_requestAccounts", []).then(async () => {
-      let signerObj = provider.getSigner();
-      setSigner(await signerObj.getAddress());
-    });
-  }, []);
-
-  console.log(timeLeft);
 
   return (
     <div

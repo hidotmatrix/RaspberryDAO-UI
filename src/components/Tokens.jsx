@@ -16,7 +16,6 @@ function Tokens(props) {
     const { data, isError, isLoading } = useBalance({
         addressOrName: 'awkweb.eth',
       })
-      console.log("Balance",data.formatted)
       const dataObj = {
         bal:data.formatted.slice(0,5),
         symbol:data.symbol
@@ -26,7 +25,6 @@ function Tokens(props) {
     useEffect(() => {
         async function fetchData() {
           let config;
-          console.log("Chain Network", chain.network);
           if (chain) {
             switch (chain.network) {
               case "homestead":
@@ -63,7 +61,6 @@ function Tokens(props) {
                 setTreasuryTokens(dataArr)
             } else {}
             } catch (error) {}
-            console.log("Treasury Tokens", treasuryTokens);
           }
         }
         fetchData();
@@ -88,7 +85,6 @@ function Tokens(props) {
                 <div className={styles.tokens}>
                     {
                         treasuryTokens.map((token) => {
-                            console.log("token",token)
                             return (
                                 <div className={styles.tokenname}>
                                     <div className={styles.left}>
