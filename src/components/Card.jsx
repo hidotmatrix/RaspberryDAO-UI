@@ -39,6 +39,7 @@ const Card = (props) => {
   const [signer, setSigner] = useState();
   const [timeLeft, setTimeLeft] = useState();
   const [proposarAddress,setProposarAddress] = useState("")
+  const [isDelegated,setDelegated] = useState()
 
   const contractReadForQuorom = useContractRead({
     addressOrName: GOVERNANCE_CONRACT_ADDRESS,
@@ -48,7 +49,6 @@ const Card = (props) => {
     onSuccess(data) {
       const parseQuorum = ethers.utils.formatEther(data.toString());
       setQuorumState(parseQuorum)
-      console.log('Success', data.toString())
     },
   })
 
@@ -60,7 +60,6 @@ const Card = (props) => {
     onSuccess(data) {
       setProposalState(data);
       setproposalStateString(proposalStateOutput());
-      console.log('Success State', data)
     },
   })
 
@@ -73,7 +72,6 @@ const Card = (props) => {
       setVotesFor(ethers.utils.formatEther(data.forVotes.toString()));
       setVotesAgainst(ethers.utils.formatEther(data.againstVotes.toString()));
       setVotesAbstain(ethers.utils.formatEther(data.abstainVotes.toString()));
-      console.log('Success Votes', data)
     },
   })
 
@@ -140,7 +138,9 @@ const Card = (props) => {
 
   useEffect(() => {
     let fetch = async ()=>{
+
       setTimeLeft(await fetchTimeLeft());
+
       const proposarAddress = "0xd32210cDFAD71568503c5c1ef7C2e6d0f33F3c1b"
       const first_sliced_string_address = proposarAddress.slice(0,8)
       const second_sliced_string_address =  proposarAddress.slice(34,42)
@@ -148,7 +148,7 @@ const Card = (props) => {
       setProposarAddress(sliced_address);
 
       const flag = await getDelegateGovernanceToken()
-      console.log("Flag",flag)
+      setDelegated(flag)
     }
     
     fetch()
@@ -220,18 +220,32 @@ const Card = (props) => {
                   </ul>
                 </div>
                 {/* <hr /> */}
-                {proposalState === 1 ? (
+                {proposalState === 0 && isDelegated ? (
+                  <div className="modal-place">Voting hasn't started yet!:</div>
+                ) : (
+                  ""
+                )}
+                {proposalState === 1 && isDelegated ? (
                   <div className="modal-place">Place your vote here:</div>
                 ) : (
+                  ""
+                )}
+                  {proposalState > 1 && isDelegated ? (
                   <div className="modal-place">Voting has been closed!</div>
+                ) : (
+                  ""
+                )}
+                 { !isDelegated ? (
+                  <div className="modal-place">Please delegate your Votes first</div>
+                ) : (
+                  ""
                 )}
                 <div className="modal-buttons">
-                  {proposalState === 1 ? (
+                  {proposalState === 1 && isDelegated ? (
                     <button
                       type="button"
                       className="for-button"
                       onClick={async () => {
-                        await delegateGovernanceToken();
                         await castVoteAndParticipate(data.pId, 1);
                       }}
                     >
@@ -241,12 +255,11 @@ const Card = (props) => {
                     ""
                   )}
 
-                  {proposalState === 1 ? (
+                  {proposalState === 1 && isDelegated? (
                     <button
                       type="button"
                       className="abstain-button"
                       onClick={async () => {
-                        await delegateGovernanceToken();
                         await castVoteAndParticipate(data.pId, 2);
                       }}
                     >
@@ -256,12 +269,11 @@ const Card = (props) => {
                     ""
                   )}
 
-                  {proposalState === 1 ? (
+                  {proposalState === 1 && isDelegated? (
                     <button
                       type="button"
                       className="against-button"
                       onClick={async () => {
-                        await delegateGovernanceToken();
                         await castVoteAndParticipate(data.pId, 0);
                       }}
                     >
@@ -270,7 +282,7 @@ const Card = (props) => {
                   ) : (
                     ""
                   )}
-                  {proposalState === 4 ? (
+                  {proposalState === 4 && isDelegated? (
                     <button
                       type="button"
                       className="queue-button"
@@ -287,7 +299,7 @@ const Card = (props) => {
                   ) : (
                     ""
                   )}
-                  {proposalState === 5 ? (
+                  {proposalState === 5 && isDelegated? (
                     <button
                       type="button"
                       className="execute-button"
@@ -300,6 +312,19 @@ const Card = (props) => {
                       }}
                     >
                       Execute
+                    </button>
+                  ) : (
+                    ""
+                  )}
+                     { !isDelegated ? (
+                    <button
+                      type="button"
+                      className="delegate_button"
+                      onClick={async () => {
+                        await delegateGovernanceToken();
+                      }}
+                    >
+                      Delegate
                     </button>
                   ) : (
                     ""

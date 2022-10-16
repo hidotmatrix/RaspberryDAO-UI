@@ -49,7 +49,6 @@ const Home = () => {
     contractInterface: ABI.abi,
     functionName: 'proposalIterator',
     onSuccess(data) {
-      console.log('Success', data.toString())
     },
   })
 

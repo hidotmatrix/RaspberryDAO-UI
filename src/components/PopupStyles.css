@@ -196,6 +196,20 @@
   margin-right: 28px;
 }
 
+.delegate_button {
+  display: flex;
+  align-items: center;
+  background-color: #16e74a;
+  width: 100px;
+  color: white;
+  font-size: 20px;
+  height: 48px;
+  border-radius: 10px;
+  text-align: center;
+  justify-content: center;
+  margin-right: 28px;
+}
+
 
 @media only screen and (max-width:1120px) {
   .modal-content {
