@@ -19,6 +19,7 @@ import {
   castVoteAndParticipate,
   queueGovernance,
   executeGovernance,
+  getDelegateGovernanceToken,
 } from "../utils/governace/governance-interaction.js";
 import moment from "moment";
 import { GOVERNANCE_CONRACT_ADDRESS, TREASURY_CONTRACT_ADDRESS } from "../constants/constants";
@@ -37,6 +38,7 @@ const Card = (props) => {
   const [votesAbstain, setVotesAbstain] = useState();
   const [signer, setSigner] = useState();
   const [timeLeft, setTimeLeft] = useState();
+  const [proposarAddress,setProposarAddress] = useState("")
 
   const contractReadForQuorom = useContractRead({
     addressOrName: GOVERNANCE_CONRACT_ADDRESS,
@@ -74,9 +76,6 @@ const Card = (props) => {
       console.log('Success Votes', data)
     },
   })
-
-  const hashh = ethers.utils.id("Release Funds from Treasury")
-  console.log("Ether hash",hashh)
 
   const { isConnected } = useAccount()
   const { chain } = useNetwork()
@@ -142,6 +141,14 @@ const Card = (props) => {
   useEffect(() => {
     let fetch = async ()=>{
       setTimeLeft(await fetchTimeLeft());
+      const proposarAddress = "0xd32210cDFAD71568503c5c1ef7C2e6d0f33F3c1b"
+      const first_sliced_string_address = proposarAddress.slice(0,8)
+      const second_sliced_string_address =  proposarAddress.slice(34,42)
+      const sliced_address = `${first_sliced_string_address}........${second_sliced_string_address}`
+      setProposarAddress(sliced_address);
+
+      const flag = await getDelegateGovernanceToken()
+      console.log("Flag",flag)
     }
     
     fetch()
@@ -163,12 +170,11 @@ const Card = (props) => {
             </button>
             <div className="modal-leftandright">
               <div className="modal-left">
-                <div className="modal-heading">{data.description}</div>
+                <div className="modal-heading">Please read proposals details below:</div>
                 <div className="modal-description">
-                  <div className="modal-subheading">Static Data Below...</div>
+                  <div className="modal-subheading">Proposal Description</div>
                   <div className="modal-subdescription">
-                    DAOs are an effective and safe way to work with like-minded
-                    folks around the globe.
+                  {data.description}
                   </div>
                 </div>
                 <div className="modal-quorum">
@@ -180,7 +186,7 @@ const Card = (props) => {
                 <div className="modal-proposer">
                   <div className="proposer-heading">Proposer :</div>
                   <button className="quorum-button">
-                    0xd32210cDFAD71568503c5c1ef7C2e6d0f33F3c1b
+                    {proposarAddress}
                   </button>
                 </div>
               </div>

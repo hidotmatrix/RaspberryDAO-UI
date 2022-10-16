@@ -10,7 +10,8 @@ import {
   useSigner,
   useContractRead,
   useContractReads,
-  useContract
+  useContract,
+  useContractEvent
 } from 'wagmi'
 import { Navbar } from "../components/Navbar.jsx";
 // import Card from "../components/Card";
@@ -33,6 +34,15 @@ const Home = () => {
   const {data: signer} = useSigner();
   
   const provider = signer?.provider;
+
+  useContractEvent({
+    addressOrName: GOVERNANCE_CONRACT_ADDRESS,
+    contractInterface: ABI.abi,
+    eventName: 'ProposalCreated',
+    listener: (event) => {
+      console.log("Events",event)
+    },
+  })
 
   const contractRead1 = useContractRead({
     addressOrName: GOVERNANCE_CONRACT_ADDRESS,
@@ -65,8 +75,8 @@ const Home = () => {
         setAddress(await checkTreasuryAddress());
         setFunds(await fundsInsideTreasury());
         const data = await fetchProposalData(Number(contractRead1.data.toString()))
-          setProposalDataArray(data);
-          setLoading(false)
+        setProposalDataArray(data);
+        setLoading(false)
       }
     };
     fetch()

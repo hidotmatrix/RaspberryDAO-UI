@@ -1,9 +1,12 @@
 import { ethers } from "ethers";
+import { app, credentials } from "../../utils/mongo-client/mongo.client"; //add
+
 
 import Token from "../../contracts/Token.json";
 import Governance from "../../contracts/Governance.json";
 import TimeLock from "../../contracts/TimeLock.json";
 import Treasury from "../../contracts/Treasury.json";
+
 
 // provider
 const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -69,6 +72,22 @@ export const delegateGovernanceToken = async () => {
   }
 };
 
+// delegate token
+export const getDelegateGovernanceToken = async () => {
+  try {
+    await getSigner();
+    const getVotes = await tokenContractInstance.getVotes(signer);
+    const votes = ethers.utils.formatUnits(getVotes.toString(),"ether");
+
+    if(Number(votes.toString())===0){
+     return false
+    }
+    return true;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 // show in UI - funds inside treasury
 export const fundsInsideTreasury = async () => {
   let funds = await provider.getBalance(treasuryContract);
@@ -95,10 +114,7 @@ export const checkTreasurySymbol = async () => {
 // create proposal
 const iface = new ethers.utils.Interface(Treasury.abi);
 // console.log(iface);
-const _amount = "100"
-const encodedFunction = iface.encodeFunctionData("withdrawFunds",[_amount]);
-// console.log("encoded function", encodedFunction);
-// const description = "Release Fund From Treasuryi";
+
 export const createProposal = async (treasuryContractAddress, description,fundToRelease) => {
   const _amount = (ethers.utils.parseEther(fundToRelease)).toString()
   const encodedFunctionLocalScope = iface.encodeFunctionData("withdrawFunds",[_amount]);
@@ -112,7 +128,14 @@ export const createProposal = async (treasuryContractAddress, description,fundTo
     .connect(signerObj)
     .propose([treasuryContractAddress], [0], [encodedFunctionLocalScope], description);
   let txReceipt = await tx.wait(1);
-  console.log(txReceipt);
+  console.log("Tx Logs",txReceipt);
+  const proposalCreated = txReceipt.events[0].args;
+  if(txReceipt.status){
+    const user = await app.logIn(credentials);
+    const insertedProposal = await user.functions.createProposal(proposalCreated.proposalId, proposalCreated.proposer, proposalCreated.targets, proposalCreated.values, proposalCreated.signatures, proposalCreated.calldatas, proposalCreated.startBlock, proposalCreated.endBlock, proposalCreated.description);
+    console.log("Proposal Inserted",insertedProposal)
+  }
+  console.log("Event Logs",txReceipt.events[0].args);
   let id = await txReceipt.events[0].args.proposalId;
   console.log(String(id));
 };
@@ -179,6 +202,10 @@ export const fetchProposalLength = async () => {
 
 
 export const fetchProposalData = async (result) => {
+  const user = await app.logIn(credentials);
+  const proposals = await user.functions.getAllProposals();
+  console.log("Proposals",proposals)
+
   let startResult = 0;
   let proposalData = [];
   const dataLength = await fetchProposalLength();

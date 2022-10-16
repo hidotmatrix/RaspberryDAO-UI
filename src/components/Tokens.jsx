@@ -14,7 +14,7 @@ function Tokens(props) {
     const [treasuryTokens, setTreasuryTokens] = useState([]);
     const { chain } = useNetwork();
     const { data, isError, isLoading } = useBalance({
-        addressOrName: 'awkweb.eth',
+        addressOrName: '0x5d1D0b1d5790B1c88cC1e94366D3B242991DC05d',
       })
       const dataObj = {
         bal:data.formatted.slice(0,5),
@@ -57,7 +57,7 @@ function Tokens(props) {
             }
     
             try {
-              if (chain.network === "homestead") { 
+              if (chain.network === "maticmum") { 
                 setTreasuryTokens(dataArr)
             } else {}
             } catch (error) {}

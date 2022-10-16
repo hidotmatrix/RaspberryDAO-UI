@@ -26,6 +26,7 @@
     "react-spinners": "^0.13.4",
     "reactjs-popup": "^2.0.5",
     "reactstrap": "^9.1.2",
+    "realm-web": "^1.7.1",
     "wagmi": "^0.5.11",
     "web-vitals": "^2.1.4",
     "web3": "^1.8.0",

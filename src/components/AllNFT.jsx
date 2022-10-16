@@ -43,11 +43,11 @@ function AllNFT() {
             }
     
             try {
-              if (chain.network === "homestead") { 
+              if (chain.network === "maticmum") { 
                 const alchemy = new Alchemy(config);
                 // Wallet address
-                const address = "elanhalpern.eth"; // static address
-                //const address = "0xabAB8096c7C9922F991772164311Ba862bCE7622"
+                //const address = "elanhalpern.eth"; // static address
+                const address = "0xabAB8096c7C9922F991772164311Ba862bCE7622"
     
                 // Get all NFTs
                 const nfts = await alchemy.nft.getNftsForOwner(address);

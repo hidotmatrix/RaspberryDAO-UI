@@ -12,7 +12,7 @@ const About = () => {
           style={{ borderColor: "#2d2d2d" }}
         >
           <h1 className=" text-gray-50 text-lg font-semibold">Network</h1>
-          <p className="font-normal text-gray-400">Goerli testnet</p>
+          <p className="font-normal text-gray-400">Polygon Mumbai testnet</p>
 
           <h1 className=" text-gray-50 text-lg font-semibold mt-4">
             Proposal Validation
