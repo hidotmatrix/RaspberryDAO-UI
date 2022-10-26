@@ -6,16 +6,17 @@ import Token from "../../contracts/Token.json";
 import Governance from "../../contracts/Governance.json";
 import TimeLock from "../../contracts/TimeLock.json";
 import Treasury from "../../contracts/Treasury.json";
+import { GOCERNANCE_TOKEN_CONTRACT_ADDRESS, GOVERNANCE_CONRACT_ADDRESS, TIMELOCK_CONTRACT_ADDRESS, TREASURY_CONTRACT_ADDRESS } from "../../constants/constants";
 
 
 // provider
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 
 // fetching contract adderesses
-const tokenContract = process.env.REACT_APP_TOKEN_CONTRACT;
-const timelockContract = process.env.REACT_APP_TIMELOCK_CONTRACT;
-const governanceContract = process.env.REACT_APP_GOVERNANCE_CONTRACT;
-const treasuryContract = process.env.REACT_APP_TREASURY_CONTRACT;
+const tokenContract = GOCERNANCE_TOKEN_CONTRACT_ADDRESS;
+const timelockContract = TIMELOCK_CONTRACT_ADDRESS;
+const governanceContract = GOVERNANCE_CONRACT_ADDRESS;
+const treasuryContract = TREASURY_CONTRACT_ADDRESS;
 
 // fetching contract ABIs
 const tokenABI = Token.abi;
@@ -115,28 +116,50 @@ export const checkTreasurySymbol = async () => {
 const iface = new ethers.utils.Interface(Treasury.abi);
 // console.log(iface);
 
-export const createProposal = async (treasuryContractAddress, description,fundToRelease) => {
+export const createProposal = async (treasuryAction,treasuryContractAddress, description, fundToRelease, fundToRecepient,selectedNFTAdress,selectedNFTTokenID,NFTrecepient) => {
+  console.log("Action",treasuryAction)
+  console.log("fund to recepient",fundToRecepient)
+  console.log("Selected NFT Address",selectedNFTAdress)
+  console.log("selected NFT Token ID",selectedNFTTokenID)
+  console.log("selected NFt recepient",NFTrecepient)
+
+  const treasuryContractBalanceInWei = await provider.getBalance(TREASURY_CONTRACT_ADDRESS)
+  
+  const treasuryContractBalanceInEther= ethers.utils.formatEther(treasuryContractBalanceInWei);
+  const etherBalanceTresuryContractNum = Number(treasuryContractBalanceInEther);
+  const THRESOLD_TREASURY_BALANCE = ((10*etherBalanceTresuryContractNum)/100)+0.001;
+  console.log("THREASOLD TREASURY Balance",ethers.utils.parseUnits(THRESOLD_TREASURY_BALANCE.toString(), "ether").toString())
+
   const _amount = (ethers.utils.parseEther(fundToRelease)).toString()
   const encodedFunctionLocalScope = iface.encodeFunctionData("withdrawFunds",[_amount]);
   console.log("Encode Function bytes",encodedFunctionLocalScope)
-  console.log(signerObj);
-  console.log(signer);
+
   await getSigner();
-  console.log(signerObj);
-  console.log(signer);
+  const userVotes = await tokenContractInstance.getVotes(signer);
+  const userGovTokenBalance = await tokenContractInstance.balanceOf(signer);
+  console.log("userGov token balance",userGovTokenBalance)
+  if(userGovTokenBalance.toString()=== "0"){
+    return
+  }
+  if(userVotes.toString() === "0" && userGovTokenBalance.toString()!=="0"){
+    let tx = await tokenContractInstance.connect(signerObj).delegate(signer);
+    let txReceipt = await tx.wait(1);
+    console.log("Delegate Receipt",txReceipt)
+  }
+
   let tx = await governanceContractInstance
     .connect(signerObj)
-    .propose([treasuryContractAddress], [0], [encodedFunctionLocalScope], description);
+    .lockFundsAndPropose([TREASURY_CONTRACT_ADDRESS], [0], [encodedFunctionLocalScope], description,{value: ethers.utils.parseUnits(THRESOLD_TREASURY_BALANCE.toString(), "ether")});
   let txReceipt = await tx.wait(1);
   console.log("Tx Logs",txReceipt);
-  const proposalCreated = txReceipt.events[0].args;
+  const proposalCreated = txReceipt.events[1].args;
   if(txReceipt.status){
     const user = await app.logIn(credentials);
     const insertedProposal = await user.functions.createProposal(proposalCreated.proposalId, proposalCreated.proposer, proposalCreated.targets, proposalCreated.values, proposalCreated.signatures, proposalCreated.calldatas, proposalCreated.startBlock, proposalCreated.endBlock, proposalCreated.description);
     console.log("Proposal Inserted",insertedProposal)
   }
-  console.log("Event Logs",txReceipt.events[0].args);
-  let id = await txReceipt.events[0].args.proposalId;
+  console.log("Event Logs",txReceipt.events[1].args);
+  let id = await txReceipt.events[1].args.proposalId;
   console.log(String(id));
 };
 
@@ -175,13 +198,12 @@ export const getVoteStatics = async (id) => {
 };
 
 // create queue for the proposal
-export const queueGovernance = async (treasuryContract,description,encodedFunction) => {
-  
+export const queueGovernance = async (treasuryContract,proposalId,description,encodedFunction) => {
   const hash = ethers.utils.id(description)
   await getSigner();
   await governanceContractInstance
     .connect(signerObj)
-    .queue([treasuryContract], [0], [encodedFunction], hash);
+    .queue([TREASURY_CONTRACT_ADDRESS], [0],encodedFunction,hash);
 };
 
 // create execute the proposal
@@ -190,7 +212,7 @@ export const executeGovernance = async (treasuryContract,description,encodedFunc
   await getSigner();
   await governanceContractInstance
     .connect(signerObj)
-    .execute([treasuryContract], [0], [encodedFunction], hash);
+    .execute([TREASURY_CONTRACT_ADDRESS], [0], encodedFunction, hash);
 };
 
 export const fetchProposalLength = async () => {
@@ -205,29 +227,5 @@ export const fetchProposalData = async (result) => {
   const user = await app.logIn(credentials);
   const proposals = await user.functions.getAllProposals();
   console.log("Proposals",proposals)
-
-  let startResult = 0;
-  let proposalData = [];
-  const dataLength = await fetchProposalLength();
-  if(dataLength === proposalData.length) {
-    return;
-  }   
-  if (result > startResult) {
-      for (let i = 1; i <= result; i++) {
-        let data = await governanceContractInstance
-          .connect(provider)
-          .proposals(i);
-        let parseData = {
-          id: String(data[0]),
-          description: data[1],
-          pId: String(data[2]),
-          start: String(data[3]),
-          end: String(data[4]),
-          calldatas:String(data[5]),
-        };
-        proposalData.push(parseData);
-      }
-      startResult = result;
-    }
-  return proposalData;
+  return proposals;
 };

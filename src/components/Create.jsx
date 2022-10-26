@@ -16,8 +16,19 @@ export const Create = () => {
   const handleFundDropdown = () => {
     setFundDropdown(!fundDropdown);
   };
+  const [nftDropdown, setNFTDropdown] = useState(false);
+  const handleNFTDropdown = () => {
+    setNFTDropdown(!nftDropdown);
+  };
 
-  const [fundToRelease, setFundToRelease] = useState(0);
+  const [treasuryAction,setTreasuryAction] = useState(0)
+
+  const [fundToRelease, setFundToRelease] = useState("");
+  const [fundToRecepient, setFundToRecepient] = useState("");
+ 
+  const [selectedNFTAdress,setNFTAddress] = useState("")
+  const [selectedNFTTokenID,setNFTTokenID]= useState("")
+  const [NFTrecepient,setNFTRecepient] = useState("")
 
   const [description, setDescription] = useState("");
 
@@ -63,7 +74,7 @@ export const Create = () => {
                       position: "relative",
                     }}
                   >
-                    <button
+               {   treasuryAction === 0 || treasuryAction ===1 ? <button
                       id="dropdownDefault"
                       data-dropdown-toggle="dropdown"
                       className={styles.dropoptions}
@@ -86,7 +97,7 @@ export const Create = () => {
                           d="M19 9l-7 7-7-7"
                         ></path>
                       </svg>
-                    </button>
+                    </button>:""}
                     {fundDropdown && (
                       <div className={styles.doubledrop}>
                         <input
@@ -95,20 +106,80 @@ export const Create = () => {
                           type="text"
                           placeholder="Ex: 100"
                           value={fundToRelease}
-                          onChange={(e) => setFundToRelease(e.target.value)}
+                          onChange={(e) => {setFundToRelease(e.target.value);setTreasuryAction(1)}}
+                        />
+                        <input
+                          className={styles.dropoptions}
+                          id="description"
+                          type="text"
+                          placeholder="Ex: 0x000..."
+                          value={fundToRecepient}
+                          onChange={(e) => setFundToRecepient(e.target.value)}
+                        />
+                      </div>
+                    )}
+                  </li>
+                  <li
+                    style={{
+                      paddingLeft: "10px",
+                      paddingTop: "10px",
+                      position: "relative",
+                    }}
+                  >
+               {treasuryAction === 2 || treasuryAction === 0? <button
+                      id="dropdownDefault"
+                      data-dropdown-toggle="dropdown"
+                      className={styles.dropoptions}
+                      type="button"
+                      onClick={handleNFTDropdown}
+                    >
+                      Withdraw NFT
+                      <svg
+                        className="ml-2 w-4 h-4"
+                        aria-hidden="true"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M19 9l-7 7-7-7"
+                        ></path>
+                      </svg>
+                    </button>:""}
+                    {nftDropdown && (
+                      <div className={styles.doubledrop}>
+                       <input
+                          className={styles.dropoptions}
+                          id="description"
+                          type="text"
+                          placeholder="NFT Address"
+                          value={selectedNFTAdress}
+                          onChange= {(e) => {setNFTAddress(e.target.value);setTreasuryAction(2)}}
+                        />
+                        <input
+                          className={styles.dropoptions}
+                          id="description"
+                          type="text"
+                          placeholder="NFT Token ID"
+                          value={selectedNFTTokenID}
+                          onChange= {(e) => setNFTTokenID(e.target.value)}
+                        />
+                            <input
+                          className={styles.dropoptions}
+                          id="description"
+                          type="text"
+                          placeholder="Recepient Address"
+                          value={NFTrecepient}
+                          onChange= {(e) => setNFTRecepient(e.target.value)}
                         />
                       </div>
                     )}
                   </li>
                   {/* <li style={{ paddingLeft: "10px" }}>
-                    <button
-                      type="button"
-                      className={styles.dropoptions}
-                    >
-                      Vote for token dividend
-                    </button>
-                  </li>
-                  <li style={{ paddingLeft: "10px" }}>
                     <button
                       type="button"
                       className={styles.dropoptions}
@@ -142,11 +213,18 @@ export const Create = () => {
               type="button"
               className={styles.createButton}
               onClick={async () => {
+                handleDropdown()
                 await createProposal(
+                  treasuryAction,
                   process.env.REACT_APP_TREASURY_CONTRACT,
                   description,
-                  fundToRelease
+                  fundToRelease,
+                  fundToRecepient,
+                  selectedNFTAdress,
+                  selectedNFTTokenID,
+                  NFTrecepient
                 );
+              
               }}
             >
               Create

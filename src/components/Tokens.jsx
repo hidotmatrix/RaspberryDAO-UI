@@ -7,20 +7,15 @@ import styles from './Tokens.module.css'
 import logo from '../solana.svg';
 import matic from "../polygon.svg"
 import cross from './Cross.svg';
+import { TREASURY_CONTRACT_ADDRESS } from '../constants/constants';
+import { ethers } from 'ethers';
 const axios = require('axios');
 
 
 function Tokens(props) {
     const [treasuryTokens, setTreasuryTokens] = useState([]);
     const { chain } = useNetwork();
-    const { data, isError, isLoading } = useBalance({
-        addressOrName: '0x5d1D0b1d5790B1c88cC1e94366D3B242991DC05d',
-      })
-      const dataObj = {
-        bal:data.formatted.slice(0,5),
-        symbol:data.symbol
-      }
-      const dataArr = [dataObj]
+    const provider = useProvider()  
     
     useEffect(() => {
         async function fetchData() {
@@ -58,6 +53,13 @@ function Tokens(props) {
     
             try {
               if (chain.network === "maticmum") { 
+                let TreasuryBalance = await provider.getBalance(TREASURY_CONTRACT_ADDRESS);
+                TreasuryBalance = ethers.utils.formatEther(TreasuryBalance.toString());
+                const dataObj = {
+                  bal:TreasuryBalance.toString().slice(0,5),
+                  symbol:"MATIC"
+                }
+                const dataArr = [dataObj]
                 setTreasuryTokens(dataArr)
             } else {}
             } catch (error) {}
@@ -84,9 +86,9 @@ function Tokens(props) {
                 </div>
                 <div className={styles.tokens}>
                     {
-                        treasuryTokens.map((token) => {
+                        treasuryTokens.map((token,index) => {
                             return (
-                                <div className={styles.tokenname}>
+                                <div className={styles.tokenname} key={index}>
                                     <div className={styles.left}>
                                         <div style={{
                                             width: "30px", borderRadius: "100%", marginRight: "10px", position: "relative", height: "20px"

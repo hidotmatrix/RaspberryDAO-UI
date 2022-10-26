@@ -6,16 +6,16 @@ import { publicProvider } from "wagmi/providers/public";
 
 export const { chains, provider } = configureChains(
   [
-    chain.mainnet,
-    chain.polygon,
-    chain.rinkeby,
+    // chain.mainnet,
+    // chain.polygon,
+    // chain.rinkeby,
     chain.polygonMumbai,
-    chain.goerli,
-    chain.optimism,
-    chain.arbitrum,
+    // chain.goerli,
+    // chain.optimism,
+    // chain.arbitrum,
   ],
   [
-    alchemyProvider({ alchemyId: process.env.REACT_APP_ALCHEMY_ID }), // zUssq5K8tyjkpvaNDtbVYjHmjcchOgXF
+    alchemyProvider({ alchemyId: process.env.REACT_APP_ALCHEMY_API_KEY }), // zUssq5K8tyjkpvaNDtbVYjHmjcchOgXF
     publicProvider(),
   ]
 );

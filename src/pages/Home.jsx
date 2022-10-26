@@ -44,13 +44,6 @@ const Home = () => {
     },
   })
 
-  const contractRead1 = useContractRead({
-    addressOrName: GOVERNANCE_CONRACT_ADDRESS,
-    contractInterface: ABI.abi,
-    functionName: 'proposalIterator',
-    onSuccess(data) {
-    },
-  })
 
   const [proposalDataArray, setProposalDataArray] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -73,7 +66,7 @@ const Home = () => {
         setSymbol(await checkTreasurySymbol());
         setAddress(await checkTreasuryAddress());
         setFunds(await fundsInsideTreasury());
-        const data = await fetchProposalData(Number(contractRead1.data.toString()))
+        const data = await fetchProposalData()
         setProposalDataArray(data);
         setLoading(false)
       }

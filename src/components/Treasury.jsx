@@ -27,14 +27,6 @@ const Treasury = () => {
     fetch();
   });
 
-  console.log(`
-    funds: ${String(funds)}
-    name: ${String(name)}
-    symbol: ${String(symbol)}
-    released: ${String(released)}
-    address: ${String(address)}
-  `);
-
   const change = () => {
     setView(false);
   };

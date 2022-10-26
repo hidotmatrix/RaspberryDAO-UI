@@ -4,6 +4,7 @@ import { Alchemy, Network } from "alchemy-sdk";
 import styles from './AllNFT.module.css'
 import Dummy from '../Dummy.svg';
 import { Link } from 'react-router-dom';
+import { TREASURY_CONTRACT_ADDRESS } from '../constants/constants';
 
 function AllNFT() {
     const [userNFTs, setUserNFTs] = useState([]);
@@ -47,7 +48,7 @@ function AllNFT() {
                 const alchemy = new Alchemy(config);
                 // Wallet address
                 //const address = "elanhalpern.eth"; // static address
-                const address = "0xabAB8096c7C9922F991772164311Ba862bCE7622"
+                const address = TREASURY_CONTRACT_ADDRESS
     
                 // Get all NFTs
                 const nfts = await alchemy.nft.getNftsForOwner(address);

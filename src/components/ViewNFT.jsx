@@ -5,6 +5,7 @@ import styles from './viewNFT.module.css';
 import { Link } from 'react-router-dom';
 import Dummy from '../Dummy.svg';
 import {BsArrowLeftCircle, BsArrowRightCircle}from 'react-icons/bs';
+import { TREASURY_CONTRACT_ADDRESS } from '../constants/constants';
 
 function ViewNFT() {
     const [userNFTs, setUserNFTs] = useState([]);
@@ -52,7 +53,7 @@ function ViewNFT() {
                 const alchemy = new Alchemy(config);
                 // Wallet address
               //  const address = "elanhalpern.eth"; // static address
-              const address = "0xabAB8096c7C9922F991772164311Ba862bCE7622"
+              const address = TREASURY_CONTRACT_ADDRESS
     
                 // Get all NFTs
                 const nfts = await alchemy.nft.getNftsForOwner(address);

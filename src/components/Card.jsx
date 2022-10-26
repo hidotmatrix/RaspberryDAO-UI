@@ -27,7 +27,7 @@ import ABI from "../contracts/Governance.json"
 
 const Card = (props) => {
   const BlockInfo = useBlockNumber()
-
+ 
   const { data, index ,provider} = props;
   const [modal, setModal] = useState(false);
   const [proposalState, setProposalState] = useState();
@@ -40,6 +40,10 @@ const Card = (props) => {
   const [timeLeft, setTimeLeft] = useState();
   const [proposarAddress,setProposarAddress] = useState("")
   const [isDelegated,setDelegated] = useState()
+  const [hasVoted,sethasVoted] = useState(false)
+
+  const { address,sConnected } = useAccount()
+  const { chain } = useNetwork()
 
   const contractReadForQuorom = useContractRead({
     addressOrName: GOVERNANCE_CONRACT_ADDRESS,
@@ -56,7 +60,7 @@ const Card = (props) => {
     addressOrName: GOVERNANCE_CONRACT_ADDRESS,
     contractInterface: ABI.abi,
     functionName: 'state',
-    args:[data.pId],
+    args:[data.proposalId],
     onSuccess(data) {
       setProposalState(data);
       setproposalStateString(proposalStateOutput());
@@ -67,16 +71,26 @@ const Card = (props) => {
     addressOrName: GOVERNANCE_CONRACT_ADDRESS,
     contractInterface: ABI.abi,
     functionName: 'proposalVotes',
-    args:[data.pId],
+    args:[data.proposalId],
     onSuccess(data) {
       setVotesFor(ethers.utils.formatEther(data.forVotes.toString()));
       setVotesAgainst(ethers.utils.formatEther(data.againstVotes.toString()));
       setVotesAbstain(ethers.utils.formatEther(data.abstainVotes.toString()));
     },
-  })
+  }) 
 
-  const { isConnected } = useAccount()
-  const { chain } = useNetwork()
+  const contractReadForPorposalhasVoted = useContractRead({
+    addressOrName: GOVERNANCE_CONRACT_ADDRESS,
+    contractInterface: ABI.abi,
+    functionName: 'hasVoted',
+    args:[data.proposalId,address],
+    onSuccess(data) {
+      sethasVoted(data)
+     console.log("has Voted",data)
+    },
+  }) 
+
+
 
   const toggleModal = () => {
     setModal(!modal);
@@ -84,8 +98,8 @@ const Card = (props) => {
 
   let fetchTimeLeft = async () => {
     let currblockNumber = await provider.getBlockNumber();
-    let endBlock = data.end;
-    let startBlock = data.start;
+    let endBlock =Number(data.endBlock._hex);
+    let startBlock = data.startBlock;
     let blockDifference = Number(endBlock)>Number(currblockNumber)?Number(endBlock) - Number(currblockNumber):0;
     let timeRate = blockDifference * 2;
     let timeOutput = timeRate / 60;
@@ -246,7 +260,7 @@ const Card = (props) => {
                       type="button"
                       className="for-button"
                       onClick={async () => {
-                        await castVoteAndParticipate(data.pId, 1);
+                        await castVoteAndParticipate(data.proposalId, 1);
                       }}
                     >
                       For
@@ -260,7 +274,7 @@ const Card = (props) => {
                       type="button"
                       className="abstain-button"
                       onClick={async () => {
-                        await castVoteAndParticipate(data.pId, 2);
+                        await castVoteAndParticipate(data.proposalId, 2);
                       }}
                     >
                       Abstain
@@ -274,7 +288,7 @@ const Card = (props) => {
                       type="button"
                       className="against-button"
                       onClick={async () => {
-                        await castVoteAndParticipate(data.pId, 0);
+                        await castVoteAndParticipate(data.proposalId, 0);
                       }}
                     >
                       Against
@@ -289,6 +303,7 @@ const Card = (props) => {
                       onClick={async () => {
                         await queueGovernance(
                           process.env.REACT_APP_TREASURY_CONTRACT,
+                          data.proposalId,
                           data.description,
                           data.calldatas
                         );
