@@ -52,6 +52,7 @@ function AllNFT() {
     
                 // Get all NFTs
                 const nfts = await alchemy.nft.getNftsForOwner(address);
+                console.log("NFTs....",nfts)
                 setUserNFTs(nfts["ownedNfts"]);
                 // Parse output
                 let numNfts = nfts["totalCount"];
@@ -86,7 +87,7 @@ function AllNFT() {
                     
                     {userNFTs.map((nft, index) => {
                   return (
-                    nft.media.length!=0? <img src={nft.media[0].gateway} alt="Dummy-NFT" className={styles.nftimage}></img>: <img src={Dummy} alt="Dummy-NFT" className={styles.nftimage}></img>
+                    nft.media.length!=0? <img key={index} src={nft.media[0].gateway} alt="Dummy-NFT" className={styles.nftimage}></img>: <img key={index}src={Dummy} alt="Dummy-NFT" className={styles.nftimage}></img>
                   );
                 })}
                 </div>

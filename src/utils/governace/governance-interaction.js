@@ -130,8 +130,21 @@ export const createProposal = async (treasuryAction,treasuryContractAddress, des
   const THRESOLD_TREASURY_BALANCE = ((10*etherBalanceTresuryContractNum)/100)+0.001;
   console.log("THREASOLD TREASURY Balance",ethers.utils.parseUnits(THRESOLD_TREASURY_BALANCE.toString(), "ether").toString())
 
-  const _amount = (ethers.utils.parseEther(fundToRelease)).toString()
-  const encodedFunctionLocalScope = iface.encodeFunctionData("withdrawFunds",[_amount]);
+  let encodedFunctionLocalScope = ""
+
+  if(treasuryAction === 1){
+    const _amount = (ethers.utils.parseEther(fundToRelease)).toString()
+    encodedFunctionLocalScope = iface.encodeFunctionData("withdrawFunds",[_amount]);
+  } else if ( treasuryAction === 2){
+    const _tokenIds = []
+    const _nftAddress = []
+    const _recepient = NFTrecepient;
+    _tokenIds.push(selectedNFTTokenID);
+    _nftAddress.push(selectedNFTAdress);
+    encodedFunctionLocalScope = iface.encodeFunctionData("withdrawNFT",[_tokenIds,_nftAddress,_recepient]);
+  }
+
+
   console.log("Encode Function bytes",encodedFunctionLocalScope)
 
   await getSigner();

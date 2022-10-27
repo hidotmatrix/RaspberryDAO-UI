@@ -239,7 +239,7 @@ const Card = (props) => {
                 ) : (
                   ""
                 )}
-                {proposalState === 1 && isDelegated ? (
+                {proposalState === 1 && isDelegated && !hasVoted ? (
                   <div className="modal-place">Place your vote here:</div>
                 ) : (
                   ""
@@ -254,8 +254,13 @@ const Card = (props) => {
                 ) : (
                   ""
                 )}
+                 { hasVoted && proposalState === 1 ? (
+                  <div className="modal-place">You have already Voted on this proposal</div>
+                ) : (
+                  ""
+                )}
                 <div className="modal-buttons">
-                  {proposalState === 1 && isDelegated ? (
+                  {proposalState === 1 && isDelegated && !hasVoted ? (
                     <button
                       type="button"
                       className="for-button"
@@ -269,7 +274,7 @@ const Card = (props) => {
                     ""
                   )}
 
-                  {proposalState === 1 && isDelegated? (
+                  {proposalState === 1 && isDelegated && !hasVoted ? (
                     <button
                       type="button"
                       className="abstain-button"
@@ -283,7 +288,7 @@ const Card = (props) => {
                     ""
                   )}
 
-                  {proposalState === 1 && isDelegated? (
+                  {proposalState === 1 && isDelegated && !hasVoted ? (
                     <button
                       type="button"
                       className="against-button"
