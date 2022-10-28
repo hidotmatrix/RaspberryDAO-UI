@@ -52,12 +52,10 @@ function AllNFT() {
     
                 // Get all NFTs
                 const nfts = await alchemy.nft.getNftsForOwner(address);
-                console.log("NFTs....",nfts)
                 setUserNFTs(nfts["ownedNfts"]);
                 // Parse output
                 let numNfts = nfts["totalCount"];
                 const nftList = nfts["ownedNfts"];  
-                console.log(`Total NFTs owned by ${address}: ${numNfts} \n`);
             } else {}
             } catch (error) {}
           }

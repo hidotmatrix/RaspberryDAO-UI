@@ -24,6 +24,7 @@
     "react-router-dom": "^6.0.0",
     "react-scripts": "5.0.1",
     "react-spinners": "^0.13.4",
+    "react-toastify": "^9.0.8",
     "reactjs-popup": "^2.0.5",
     "reactstrap": "^9.1.2",
     "realm-web": "^1.7.1",

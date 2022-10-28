@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
+import { toast, ToastContainer } from 'react-toastify';
 import {
   useAccount,
   useConnect,
@@ -45,6 +46,33 @@ const Card = (props) => {
   const { address,sConnected } = useAccount()
   const { chain } = useNetwork()
 
+
+  const notify = async (txReceipt,isErrored) => { 
+    if(isErrored===2){
+      toast.error(txReceipt.data.message)
+    }
+    try {
+      const txData = txReceipt.wait()
+      toast.promise(
+        txData,
+        {
+          pending: 'Your transaction is pending',
+          success: `Your transaction for Voting has been confirmed`,
+          error: 'You transaction has been rejected 🤯'
+        }
+    )
+    } catch (error) {
+      toast.error(error.data.message)
+    }finally{
+      // setLoading(false)
+      // const timerId = setTimeout(() => {
+      //    navigate("/");
+      //    clearTimeout(timerId);
+      // }, 5500);
+    }
+};
+
+
   const contractReadForQuorom = useContractRead({
     addressOrName: GOVERNANCE_CONRACT_ADDRESS,
     contractInterface: ABI.abi,
@@ -86,7 +114,6 @@ const Card = (props) => {
     args:[data.proposalId,address],
     onSuccess(data) {
       sethasVoted(data)
-     console.log("has Voted",data)
     },
   }) 
 
@@ -265,7 +292,8 @@ const Card = (props) => {
                       type="button"
                       className="for-button"
                       onClick={async () => {
-                        await castVoteAndParticipate(data.proposalId, 1);
+                        const {tx,isError}= await castVoteAndParticipate(data.proposalId, 1);
+                        notify(tx,isError)
                       }}
                     >
                       For
@@ -279,7 +307,8 @@ const Card = (props) => {
                       type="button"
                       className="abstain-button"
                       onClick={async () => {
-                        await castVoteAndParticipate(data.proposalId, 2);
+                        const {tx,isError} = await castVoteAndParticipate(data.proposalId, 2);
+                        notify(tx,isError)
                       }}
                     >
                       Abstain
@@ -293,7 +322,8 @@ const Card = (props) => {
                       type="button"
                       className="against-button"
                       onClick={async () => {
-                        await castVoteAndParticipate(data.proposalId, 0);
+                        const {tx,isError} = await castVoteAndParticipate(data.proposalId, 0);
+                        notify(tx,isError)
                       }}
                     >
                       Against
@@ -306,12 +336,13 @@ const Card = (props) => {
                       type="button"
                       className="queue-button"
                       onClick={async () => {
-                        await queueGovernance(
+                        const {tx,isError} = await queueGovernance(
                           process.env.REACT_APP_TREASURY_CONTRACT,
                           data.proposalId,
                           data.description,
                           data.calldatas
                         );
+                        notify(tx,isError)
                       }}
                     >
                       Queue
@@ -324,11 +355,12 @@ const Card = (props) => {
                       type="button"
                       className="execute-button"
                       onClick={async () => {
-                        await executeGovernance(
+                        const {tx,isError} = await executeGovernance(
                           process.env.REACT_APP_TREASURY_CONTRACT,
                           data.description,
                           data.calldatas
                         );
+                        notify(tx,isError)
                       }}
                     >
                       Execute
@@ -341,7 +373,8 @@ const Card = (props) => {
                       type="button"
                       className="delegate_button"
                       onClick={async () => {
-                        await delegateGovernanceToken();
+                        const {tx,isError}=await delegateGovernanceToken();
+                        notify(tx,isError)
                       }}
                     >
                       Delegate
@@ -386,6 +419,8 @@ const Card = (props) => {
           <b> Ends In: {timeLeft} </b>
         </p>
       </a>
+      <ToastContainer
+          theme="dark" />
     </div>
   );
 };

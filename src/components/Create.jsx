@@ -1,12 +1,20 @@
 import React, { useState } from "react";
 import styles from './Create.module.css';
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+import {app,credentials} from "../utils/mongo-client/mongo.client"
+import { useNavigate } from 'react-router-dom';
+
 import {
   createProposal,
   queueGovernance,
   executeGovernance,
+  sendMoney,
 } from "../utils/governace/governance-interaction";
 
 export const Create = () => {
+  const navigate = useNavigate();
+
   const [dropdown, setDropdown] = useState(false);
   const handleDropdown = () => {
     setDropdown(!dropdown);
@@ -21,6 +29,7 @@ export const Create = () => {
     setNFTDropdown(!nftDropdown);
   };
 
+  const [isLoading,setLoading] = useState(false)
   const [treasuryAction,setTreasuryAction] = useState(0)
 
   const [fundToRelease, setFundToRelease] = useState("");
@@ -31,6 +40,38 @@ export const Create = () => {
   const [NFTrecepient,setNFTRecepient] = useState("")
 
   const [description, setDescription] = useState("");
+
+  const notify = async (txReceipt,isErrored) => { 
+    setLoading(true)
+    if(isErrored===2){
+      toast.error(txReceipt.data.message)
+    }
+    try {
+      const txData = txReceipt.wait()
+      toast.promise(
+        txData,
+        {
+          pending: 'Your transaction is pending',
+          success: `Your transaction has been confirmed`,
+          error: 'You transaction has been rejected 🤯'
+        }
+    )
+    const tx = await txData;
+    const proposalCreated = tx.events[1].args;
+      if(tx.status){
+        const user = await app.logIn(credentials);
+        const insertedProposal = await user.functions.createProposal(proposalCreated.proposalId, proposalCreated.proposer, proposalCreated.targets, proposalCreated.values, proposalCreated.signatures, proposalCreated.calldatas, proposalCreated.startBlock, proposalCreated.endBlock, proposalCreated.description);
+      }
+    } catch (error) {
+      toast.error(error.data.message)
+    }finally{
+      setLoading(false)
+      const timerId = setTimeout(() => {
+         navigate("/");
+         clearTimeout(timerId);
+      }, 5000);
+    }
+};
 
   return (
     <div className={styles.createpage}>
@@ -179,14 +220,6 @@ export const Create = () => {
                       </div>
                     )}
                   </li>
-                  {/* <li style={{ paddingLeft: "10px" }}>
-                    <button
-                      type="button"
-                      className={styles.dropoptions}
-                    >
-                      Remove veto power
-                    </button>
-                  </li> */}
                 </ul>
               </div>
             )}
@@ -212,9 +245,10 @@ export const Create = () => {
             <button
               type="button"
               className={styles.createButton}
+              disabled={isLoading}
               onClick={async () => {
                 handleDropdown()
-                await createProposal(
+                const {tx,isErrored} = await createProposal(
                   treasuryAction,
                   process.env.REACT_APP_TREASURY_CONTRACT,
                   description,
@@ -224,41 +258,20 @@ export const Create = () => {
                   selectedNFTTokenID,
                   NFTrecepient
                 );
-              
+                notify(tx,isErrored)
               }}
             >
-              Create
+             {isLoading?"Creating...":"Create"}
             </button>
-            {/* <button
-              type="button"
-              className={styles.queueButton}
-              onClick={async () => {
-                await queueGovernance(
-                  process.env.REACT_APP_TREASURY_CONTRACT,
-                  description
-                );
-              }}
-            >
-              Queue
-            </button>
-            <button
-              type="button"
-              className={styles.executeButton}
-              onClick={async () => {
-                await executeGovernance(
-                  process.env.REACT_APP_TREASURY_CONTRACT,
-                  description
-                );
-              }}
-            >
-              Execute
-            </button> */}
+           
           </div>
         </form>
       </div>
       <div className={styles.disclaimer}>
         <span style={{ marginRight: "6px" }}>&copy;</span>2022 Raspberry DAO
       </div>
+          <ToastContainer
+          theme="dark" />
     </div>
   );
 };

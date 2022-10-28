@@ -66,10 +66,12 @@ export const delegateGovernanceToken = async () => {
     const votes = ethers.utils.formatUnits(getVotes.toString(),"ether");
 
     if(Number(votes.toString())===0){
-     await tokenContractInstance.connect(signerObj).delegate(signer)
+     const tx = await tokenContractInstance.connect(signerObj).delegate(signer)
+     return {tx,isError:1}
     }
   } catch (err) {
-    console.log(err);
+    const tx = err
+    return {tx,isError:2}
   }
 };
 
@@ -93,7 +95,6 @@ export const getDelegateGovernanceToken = async () => {
 export const fundsInsideTreasury = async () => {
   let funds = await provider.getBalance(treasuryContract);
   let parseFunds = ethers.utils.formatEther(String(funds));
-  console.log(parseFunds);
   return parseFunds;
 };
 
@@ -117,18 +118,12 @@ const iface = new ethers.utils.Interface(Treasury.abi);
 // console.log(iface);
 
 export const createProposal = async (treasuryAction,treasuryContractAddress, description, fundToRelease, fundToRecepient,selectedNFTAdress,selectedNFTTokenID,NFTrecepient) => {
-  console.log("Action",treasuryAction)
-  console.log("fund to recepient",fundToRecepient)
-  console.log("Selected NFT Address",selectedNFTAdress)
-  console.log("selected NFT Token ID",selectedNFTTokenID)
-  console.log("selected NFt recepient",NFTrecepient)
 
   const treasuryContractBalanceInWei = await provider.getBalance(TREASURY_CONTRACT_ADDRESS)
   
   const treasuryContractBalanceInEther= ethers.utils.formatEther(treasuryContractBalanceInWei);
   const etherBalanceTresuryContractNum = Number(treasuryContractBalanceInEther);
   const THRESOLD_TREASURY_BALANCE = ((10*etherBalanceTresuryContractNum)/100)+0.001;
-  console.log("THREASOLD TREASURY Balance",ethers.utils.parseUnits(THRESOLD_TREASURY_BALANCE.toString(), "ether").toString())
 
   let encodedFunctionLocalScope = ""
 
@@ -143,37 +138,25 @@ export const createProposal = async (treasuryAction,treasuryContractAddress, des
     _nftAddress.push(selectedNFTAdress);
     encodedFunctionLocalScope = iface.encodeFunctionData("withdrawNFT",[_tokenIds,_nftAddress,_recepient]);
   }
-
-
-  console.log("Encode Function bytes",encodedFunctionLocalScope)
-
   await getSigner();
   const userVotes = await tokenContractInstance.getVotes(signer);
   const userGovTokenBalance = await tokenContractInstance.balanceOf(signer);
-  console.log("userGov token balance",userGovTokenBalance)
   if(userGovTokenBalance.toString()=== "0"){
     return
   }
   if(userVotes.toString() === "0" && userGovTokenBalance.toString()!=="0"){
     let tx = await tokenContractInstance.connect(signerObj).delegate(signer);
     let txReceipt = await tx.wait(1);
-    console.log("Delegate Receipt",txReceipt)
   }
-
-  let tx = await governanceContractInstance
+  try {
+    let tx = await governanceContractInstance
     .connect(signerObj)
     .lockFundsAndPropose([TREASURY_CONTRACT_ADDRESS], [0], [encodedFunctionLocalScope], description,{value: ethers.utils.parseUnits(THRESOLD_TREASURY_BALANCE.toString(), "ether")});
-  let txReceipt = await tx.wait(1);
-  console.log("Tx Logs",txReceipt);
-  const proposalCreated = txReceipt.events[1].args;
-  if(txReceipt.status){
-    const user = await app.logIn(credentials);
-    const insertedProposal = await user.functions.createProposal(proposalCreated.proposalId, proposalCreated.proposer, proposalCreated.targets, proposalCreated.values, proposalCreated.signatures, proposalCreated.calldatas, proposalCreated.startBlock, proposalCreated.endBlock, proposalCreated.description);
-    console.log("Proposal Inserted",insertedProposal)
-  }
-  console.log("Event Logs",txReceipt.events[1].args);
-  let id = await txReceipt.events[1].args.proposalId;
-  console.log(String(id));
+     return {tx,isErrored:1};
+   } catch (error) {
+     let tx = error
+     return {tx,isErrored:2}
+   }
 };
 
 // show in UI - the current STATE of the proposal (use setTimeOut function here)
@@ -197,7 +180,13 @@ export const getQuorum = async (provider) => {
 // 2 - Abstain
 export const castVoteAndParticipate = async (id, vote) => {
   await getSigner();
-  await governanceContractInstance.connect(signerObj).castVote(id, vote);
+  try {
+     const tx = await governanceContractInstance.connect(signerObj).castVote(id, vote);
+     return {tx,isError:1}
+      } catch (error) {
+     let tx = error
+     return {tx,isError:2}
+  }
 };
 
 // show in UI - voting statics - how many votes are FOR, AGAINST, ABSTAIN
@@ -212,33 +201,46 @@ export const getVoteStatics = async (id) => {
 
 // create queue for the proposal
 export const queueGovernance = async (treasuryContract,proposalId,description,encodedFunction) => {
-  const hash = ethers.utils.id(description)
-  await getSigner();
-  await governanceContractInstance
+    const hash = ethers.utils.id(description)
+    await getSigner();
+    try {
+     const tx = await governanceContractInstance
     .connect(signerObj)
     .queue([TREASURY_CONTRACT_ADDRESS], [0],encodedFunction,hash);
+    return {tx,isError:1}
+    }catch (error) {
+      let tx = error
+      return {tx,isError:2}
+    }
 };
 
 // create execute the proposal
 export const executeGovernance = async (treasuryContract,description,encodedFunction) => {
   const hash = ethers.utils.id(description)
   await getSigner();
-  await governanceContractInstance
+  try {
+    const tx = await governanceContractInstance
     .connect(signerObj)
     .execute([TREASURY_CONTRACT_ADDRESS], [0], encodedFunction, hash);
-};
-
-export const fetchProposalLength = async () => {
-  
-  return String(
-    await governanceContractInstance.connect(provider).proposalIterator()
-  );
+    return {tx,isError:1}
+  } catch (error) {
+    let tx = error
+    return {tx,isError:2}
+  }
 };
 
 
 export const fetchProposalData = async (result) => {
   const user = await app.logIn(credentials);
   const proposals = await user.functions.getAllProposals();
-  console.log("Proposals",proposals)
   return proposals;
 };
+
+export const sendMoney = async () =>{
+  await getSigner();
+  const tx = await signerObj.sendTransaction({
+    to: "0x5d1D0b1d5790B1c88cC1e94366D3B242991DC05d",
+    value: ethers.utils.parseEther("0.001")
+});
+return tx;
+}

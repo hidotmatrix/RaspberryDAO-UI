@@ -40,7 +40,6 @@ const Home = () => {
     contractInterface: ABI.abi,
     eventName: 'ProposalCreated',
     listener: (event) => {
-      console.log("Events",event)
     },
   })
 

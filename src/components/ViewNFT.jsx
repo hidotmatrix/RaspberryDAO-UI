@@ -74,8 +74,6 @@ function ViewNFT() {
                   setImg2(Dummy)
                   setImg3(Dummy)
                 }
-    
-                console.log(`Total NFTs owned by ${address}: ${numNfts} \n`);
             } else {}
             } catch (error) {}
           }
