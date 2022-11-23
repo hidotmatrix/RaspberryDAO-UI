@@ -1,0 +1,393 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;500;700&family=Open+Sans:wght@300;400;500;600;700&display=swap');
+
+.overlay {
+  background: rgba(211, 207, 207, 0.3);
+}
+
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #000000;
+  opacity: 1;
+  color: white;
+  border-radius: 30px;
+  width: 1080px;
+  display: flex;
+  box-sizing: border-box;
+  transition: all 0.5s ease-in-out;
+  justify-content: center;
+}
+
+.close-modal {
+  position: absolute;
+  top: 15px;
+  right: 30px;
+  cursor: pointer;
+}
+
+.modal-leftandright {
+  display: flex;
+}
+
+.modal-left {
+  flex-basis: 50%;
+  margin-left: 32px;
+  margin-right: 10px;
+  border-right: 1px solid white;
+}
+
+.modal-heading {
+  margin-top: 50px;
+  font-family: 'Lato', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 125%;
+  color: #FFFFFF;
+  margin-bottom: 36px;
+}
+
+.modal-subheading {
+  font-weight: 300;
+  font-size: 20px;
+  line-height: 116%;
+  color: #FFFFFF;
+  margin-bottom: 20px;
+}
+
+.modal-subdescription {
+  font-weight: 300;
+  font-size: 20px;
+  line-height: 116%;
+  color: #FFFFFF;
+  margin-bottom: 60px;
+}
+
+.modal-quorum {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.modal-proposer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+.quorum-heading {
+  font-size: 20px;
+}
+
+.quorum-button {
+  display: flex;
+  align-items: center;
+  outline: none;
+  background-color: #6245ED;
+  border-radius: 10px;
+  color: #FFFFFF;
+  padding: 0px 8px;
+  margin-left: 10px;
+  height: 28px;
+  font-size: 16px;
+}
+
+.proposer-heading {
+  font-size: 20px;
+}
+
+.modal-right {
+  flex-basis: 50%;
+  margin-left: 30px;
+  margin-right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.vote-status-box {
+  margin-bottom: 24px;
+  margin-top: 40px;
+}
+
+.modal-place {
+  background: #1d43ce;
+  border-radius: 10px;
+  color: white;
+  margin-bottom: 24px;
+  padding: 6px 16px;
+}
+
+.modal-buttons {
+  display: flex;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.for-button {
+  display: flex;
+  align-items: center;
+  background-color: #2DC937;
+  width: 100px;
+  color: white;
+  font-size: 20px;
+  height: 48px;
+  border-radius: 10px;
+  text-align: center;
+  justify-content: center;
+  margin-right: 28px;
+}
+
+.against-button {
+  display: flex;
+  align-items: center;
+  background-color: #CC3232;
+  width: 100px;
+  color: white;
+  font-size: 20px;
+  height: 48px;
+  border-radius: 10px;
+  text-align: center;
+  justify-content: center;
+}
+
+.abstain-button {
+  display: flex;
+  align-items: center;
+  background-color: #E7B416;
+  width: 100px;
+  color: white;
+  font-size: 20px;
+  height: 48px;
+  border-radius: 10px;
+  text-align: center;
+  justify-content: center;
+  margin-right: 28px;
+}
+
+.queue-button {
+  display: flex;
+  align-items: center;
+  background-color: #e76a16;
+  width: 100px;
+  color: white;
+  font-size: 20px;
+  height: 48px;
+  border-radius: 10px;
+  text-align: center;
+  justify-content: center;
+  margin-right: 28px;
+}
+
+.execute-button {
+  display: flex;
+  align-items: center;
+  background-color: #163ce7;
+  width: 100px;
+  color: white;
+  font-size: 20px;
+  height: 48px;
+  border-radius: 10px;
+  text-align: center;
+  justify-content: center;
+  margin-right: 28px;
+}
+
+.delegate_button {
+  display: flex;
+  align-items: center;
+  background-color: #16e74a;
+  width: 100px;
+  color: white;
+  font-size: 20px;
+  height: 48px;
+  border-radius: 10px;
+  text-align: center;
+  justify-content: center;
+  margin-right: 28px;
+}
+
+
+@media only screen and (max-width:1120px) {
+  .modal-content {
+    width: 540px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-leftandright {
+    flex-direction: column;
+    max-height: calc(100vh - 200px);
+    overflow: auto;
+  }
+
+  .modal-leftandright::-webkit-scrollbar-track {
+    border: none;
+    margin: 20px 0px;
+    background-color: transparent;
+  }
+
+  .modal-leftandright::-webkit-scrollbar {
+    width: 4px;
+    margin-left: -10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .modal-leftandright::-webkit-scrollbar-thumb {
+    border-radius: 20px;
+    background-color: #FFFFFF;
+    border: 1px solid rgba(15, 20, 58, 0.08);
+  }
+
+  .modal-left {
+    padding-top: 0px;
+    margin-top: 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-basis: 50%;
+    flex-wrap: wrap;
+    margin-left: 0px;
+    margin-right: 0px;
+    border-right: none;
+    border-bottom: 1px solid #FFFFFF;
+  }
+
+  .modal-description {
+    margin-left: 30px;
+    margin-right: 30px;
+  }
+}
+
+@media only screen and (max-width:640px) {
+  .modal-content {
+    position: fixed;
+    left: 0%;
+    transform: translate(0%, 0%);
+    width: 100vw;
+    height: 400px;
+    top: calc(100vh - 400px);
+    bottom: 0px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0px;
+  }
+
+  .close-modal {
+    top: 10px;
+    right: 20px;
+  }
+
+  .modal-heading {
+    margin-top: 30px;
+    font-size: 20px;
+    margin-bottom: 24px;
+  }
+
+  .modal-description {
+    margin-left: 40px;
+  }
+
+  .modal-subheading {
+    font-size: 14px;
+    margin-bottom: 18px;
+  }
+
+  .modal-subdescription {
+    font-size: 14px;
+    margin-bottom: 30px;
+  }
+
+  .modal-quorum {
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .modal-proposer {
+    justify-content: flex-start;
+    text-align: left;
+    margin-bottom: 30px;
+  }
+
+  .quorum-heading {
+    font-size: 14px;
+  }
+
+  .quorum-button {
+    display: flex;
+    align-items: center;
+    outline: none;
+    background-color: #6245ED;
+    border-radius: 10px;
+    color: #FFFFFF;
+    padding: 0px 8px;
+    margin-left: 4px;
+    height: 20px;
+    font-size: 12px;
+  }
+
+  .proposer-heading {
+    font-size: 14px;
+  }
+
+  .modal-right {
+    flex-basis: 50%;
+    margin-left: 30px;
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .vote-status-box {
+    margin-bottom: 24px;
+    margin-top: 40px;
+  }
+
+  .modal-place {
+    background: #6245ED;
+    border-radius: 10px;
+    color: white;
+    margin-bottom: 24px;
+    padding: 6px 16px;
+  }
+
+  .modal-buttons {
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+  }
+
+  .for-button {
+    width: 80px;
+    font-size: 16px;
+    height: 32px;
+    border-radius: 8px;
+    margin-right: 20px;
+  }
+
+  .against-button {
+    width: 80px;
+    font-size: 16px;
+    height: 32px;
+    border-radius: 8px;
+  }
+
+  .abstain-button {
+    width: 80px;
+    font-size: 16px;
+    height: 32px;
+    border-radius: 8px;
+    margin-right: 20px;
+  }
+}

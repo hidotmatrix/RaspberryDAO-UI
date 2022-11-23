@@ -1,0 +1,23 @@
+.treasurypage{
+    display: flex;
+    justify-content: center;
+}
+
+.sidebar{
+    margin-top: 40px;
+}
+
+.treasury{
+    margin-top: 10px;
+}
+
+.view{
+    margin-top: 70px;
+}
+
+@media only screen and (max-width:1080px) {
+    .treasurypage{
+        flex-direction: column;
+        align-items: center;
+    }
+}
